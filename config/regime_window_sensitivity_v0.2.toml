@@ -1,0 +1,121 @@
+# 推测核对线 · 窗口尺度敏感性 v0.2
+# 冻结时间：在查看任何 v0.2 分组结果之前
+# 父规格：config/regime_conjecture_check.toml (v0.1)，v0.1 的 5 支持 / 1 矛盾 / 8 无法判定
+#        判定与全部产物原封保留，不覆盖、不回改、不重新解释。
+version = "v0.2"
+status = "frozen_before_evaluation"
+kind = "within-sample descriptive conjecture check / window-scale sensitivity"
+
+[motivation]
+# 先验事实（与 v0.1 结果好坏无关，看结果前即可确认）
+crisis_event_lengths_days = [32, 5, 1, 14, 17, 12, 17, 12, 14, 2, 32, 6, 17, 1, 1, 16]
+crisis_event_median_days = 14
+crisis_event_max_days = 32
+v0_1_xy_corr_window = 30
+v0_1_phti_vr_window = 60
+v0_1_events_filling_60d_window = 0
+statement = """
+16 个可用危机事件的中位长度约 14 个交易日、最长 32 日；v0.1 的 PHTI 观测算子是
+60 日 VR 窗口（且 W_t 取相邻两日窗口的 Wasserstein 距离），兴业观测算子是 30 日
+相关窗口。观测算子长于被测对象 → 窗口内多数是常态日，效应被稀释；C10「窗口填满后
+孔洞消失」结构性测不了。这属于设计层面的尺度失配，不是按结果反选。
+本升版只把尺度调小，检验「缩短尺度后，危机中能否被刻画 / 危机前能否提前」。
+"""
+not_result_driven = true
+
+[grid]
+# 全部格点一次性计算并全披露，不按结果挑选窗口
+xy_corr_window_days = [10, 15, 20, 30]      # 30 = v0.1 对照，应逐点复现
+phti_vr_window_days = [20, 30, 40, 60]      # 60 = v0.1 对照，应逐点复现
+phti_sma_window_days = 60                   # 固定不变；SMA 列仅作附加，不进主判据
+panels = ["xy_network", "phti_p16", "phti_p27"]
+
+[frozen_from_v0_1]
+state_labels = "outputs/regime_daily_labels.csv（三层规则，主口径 v0_primary，不改）"
+crisis_events = "outputs/xy_crisis_events.csv（17 段，首段左删失 → 16 可用，onset..end 221 日）"
+pre_windows = [-20, -10, -5]
+bootstrap = "20 日区块自助 × 1000 次，percentile 95% CI，双侧 Wald 型 p"
+correction = "Bonferroni(12)，未校正与校正两栏都给"
+event_level = "危机段按 16 个事件起点计，禁止日级重复计数（389 日→40 簇的教训）"
+scale_residual = "W_t/RMS、h0_death/RMS、W_t 对 RMS+平均相关+第一特征值占比的回归残差"
+cross_window_comparability = """
+不同窗口的 W_t 绝对量级天然不同（窗口越短，相邻两日持续图差异越大），
+属窗口长度的机械效应。禁止拿不同窗口的 delta 绝对值互比大小；
+统一报窗口内标准化效应 delta/MAD(常态)，显著性与方向仍各窗口独立判定，
+不做跨窗口合并检验。J1 看的是「每个窗口内是否可检出」，不是「哪个窗口 Δ 最大」。
+"""
+verdict_levels = ["支持", "矛盾", "无法判定（含数据不足）"]
+disclosure = "全格披露，含所有否定结果；5 个标签版本做稳定性"
+
+[node_count_control]
+# 兴业线节点数漂移（N 中位 3→14）是已知混淆，必须显式控制
+rule = """
+每日有效行业名单固定为 v0.1 的 30 日窗口 eligible 名单（31 个完整正收盘 +
+非零样本方差），同一交易日的所有窗口共用同一名单；若名单内某列在任一短窗口
+内零方差/缺失，则该交易日从所有窗口一并剔除该行业并披露剔除数。
+30 日窗口的 n_nodes 必须与 xy_corrected_features.csv 逐日核对一致。
+"""
+purpose = "隔离窗口长度效应，不把节点数变化误读成拓扑变化"
+
+[primary_judgements]
+# 预先登记的四个可证伪判据，看结果前写死
+J1_post_hoc_response = """
+事后响应：危机中 6 个尺度量（phti_p16/p27 × W_t / h0_death_mean / h1_birth_mean）
+相对常态的方向一致性与 Bonferroni 显著格数，是否随窗口缩短而上升。
+"""
+J2_ex_ante_lead = """
+事前提前：危机前 -20/-10/-5 的形状摘要显著格数是否仍为 0；若出现显著格，
+须同时过 Bonferroni 且在 5 个标签版本稳定，才可称「提前量出现」。
+J1 与 J2 必须分开报，不得合并成一句「变好了」。
+"""
+J3_structural_measurability = "每个窗口下长度 >= w 的危机事件数（能填满窗口的事件数）"
+J4_noise_cost = """
+兴业线：N 的逐日变差、单日事件簇比例、平均相关的 Fisher z 标准误 1/sqrt(w-3)，
+随 w 缩短是否恶化（与「低误报」目标直接冲突的代价必须披露）。
+"""
+
+[known_structural_limits]
+# 先验可知（看结果前登记），不是事后找补
+p27_panel_dimension = 27
+p16_panel_dimension = 16
+note = """
+PHTI 状态点云在 p27 面板有 27 个行业坐标；w=20/30 时窗口内只有 20/30 个点，
+点数少于（或接近）维数，点云实际张成至多 w-1 维子空间。VR 复形仍然良定义，
+但 H1 环结构受点数-维数比约束，因此 w=20/30 与 w=60 的 H1 数量/持久性
+不可当成同一量级直接比较；报告中单独披露，主判据 W_t / H0 尺度量不受此限。
+兴业线的节点数已由 node_count_control 固定，但仍须逐窗口报 n_nodes 范围。
+"""
+crisis_event_count = 16
+# 先验可算：仅由 xy_crisis_events.csv 的 label_run_days 得出，未用任何 v0.2 摘要
+prior_fill_counts = {10 = 10, 15 = 6, 20 = 2, 30 = 2, 40 = 0, 60 = 0}
+low_power_warning = """
+事件长度 [32,5,1,14,17,12,17,12,14,2,32,6,17,1,1,16]：即使缩到 w=20，
+能填满窗口的危机事件也只有 2/16；w=40/60 为 0/16。因此「窗口填满后孔洞消失」
+类结论即使缩短了窗口也仍只有极低功效，不得做强判定。缩短窗口主要改善的是
+「危机中混合窗口里常态点占比」，不是「能测到窗口填满」。
+"""
+
+[explicitly_not_done]
+performance = false
+ic_or_sharpe = false
+position_or_weights = false
+gate1_2025_final_test = false
+gate2 = false
+overwrite_v0_1 = false
+monthly_quintile_or_table2_rule = false
+
+[outputs]
+prefix = "outputs/regime_win_"
+grid_csv = "regime_win_grid.csv"
+verdicts_json = "regime_win_verdicts.json"
+summaries_dir = "outputs/ (regime_win_summaries_<line>_<window>_<panel>.csv)"
+report_html = "outputs/regime_window_sensitivity_report.html"
+scripts = "src/regime_check/build_window_grid_summaries.py, verify_window_grid.py, build_window_sensitivity_report.py"
+
+[boundary]
+note = """
+全部样本内描述性对账；不加载股指收益、不读 Gate 1 封存的 2025 最终测试集、
+不改 config/study.toml、不评分不调参不算绩效。
+Gate 1 仍暂停、Gate 2 不启动、PHTI 正式绩效回测未运行。
+不得把任何结果外推为「TDA 对 A 股危机预警有效/无效」的确认性结论。
+"""

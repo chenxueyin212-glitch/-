@@ -1,0 +1,446 @@
+# =============================================================================
+# v0.34 候选方案重算（对齐 + 清洗后的基准日历上）
+# 登记时间：2026-11-22T15:12:00+08:00
+# 目的：第五章主结果表内的全部候选配置，在 v0.33 修正后的 6,502 日基准日历上
+#       逐项重算，检验候选排序与候选增量是否稳定。
+# 纪律：本文件在计算启动前写定；判据、门槛、决策规则不得事后修改。
+# =============================================================================
+
+[meta]
+version = "v0.34"
+title = "候选方案在修正基准日历上的重算"
+preregistered_at = "2026-11-22T15:12:00+08:00"
+depends_on = "v0.33（regime_v033_benchmark_daily.csv，6,502 日）"
+predecessors = ["v0.19（方案一/方案二与六格析因）", "v0.21（滚动判定钟 R）", "v0.15（S3 无状态管理消融）", "v0.17（C2 否定对照）"]
+frozen_bench_old = "regime_v05_benchmark_daily.csv（6,483 日，缺 19 天）"
+frozen_bench_new = "regime_v033_benchmark_daily.csv（6,502 日）"
+feature_panel = "regime_v07_split_wide.csv（七票特征，缺上述 19 天）"
+
+# ---------------------------------------------------------------------------
+# 一、候选清单：只算论文里点名过的，不新增任何未发表配置
+# ---------------------------------------------------------------------------
+[[candidates]]
+id = "A"
+name = "方案一（冻结基准）：S3＋B10＋7项4票"
+paper_ref = "5.4（二）主结果表第 1 行"
+box = 7
+votes = 4
+clock = "single"
+alarm_rule = "B10"
+status = "v0.33 已算，本版复核"
+
+[[candidates]]
+id = "B"
+name = "方案二（C1 重点候选）：S3＋B10＋10项6票"
+paper_ref = "5.4（二）主结果表第 2 行"
+box = 10
+votes = 6
+clock = "single"
+alarm_rule = "B10"
+status = "v0.33 已算，本版复核"
+
+[[candidates]]
+id = "C"
+name = "候选修订组合：S3＋B10＋7项4票＋滚动钟 R"
+paper_ref = "5.4（二）主结果表第 3 行；组合评估 5.4（六）"
+box = 7
+votes = 4
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "D"
+name = "候选修订组合：S3＋B10＋10项6票＋滚动钟 R"
+paper_ref = "5.4（二）主结果表第 4 行；组合评估 5.4（六）"
+box = 10
+votes = 6
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "E1"
+name = "R × 10项4票"
+paper_ref = "5.4（六）「析因网格其余四组」"
+box = 10
+votes = 4
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "E2"
+name = "R × 7项5票"
+paper_ref = "5.4（六）「析因网格其余四组」"
+box = 7
+votes = 5
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "E3"
+name = "R × 10项5票"
+paper_ref = "5.4（六）「析因网格其余四组」"
+box = 10
+votes = 5
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "E4"
+name = "R × 7项6票"
+paper_ref = "5.4（六）「析因网格其余四组」"
+box = 7
+votes = 6
+clock = "rolling"
+alarm_rule = "B10"
+status = "本版重算"
+
+[[candidates]]
+id = "F"
+name = "消融：S3，无告警状态管理"
+paper_ref = "5.4（二）主结果表第 6 行"
+box = 7
+votes = 4
+clock = "single"
+alarm_rule = "S3_ONLY"
+status = "本版重算"
+
+[[candidates]]
+id = "G"
+name = "候选增强（未采纳）C2：拓扑指标恢复常态后提前解除告警"
+paper_ref = "5.4（二）主结果表第 7 行；5.4（八）"
+box = 7
+votes = 4
+clock = "single"
+alarm_rule = "C2"
+status = "本版重算"
+
+[excluded]
+id = "X"
+name = "消融：旧混合触发规则"
+reason = "论文 5.4（二）表下注已写明「该原实验未按本表宽窗重算，故以「—」标示」，不与宽窗口径比较；本版沿用该处理，不重算、不补数"
+paper_value = "—；29/45；+27.0"
+
+# ---------------------------------------------------------------------------
+# 二、规则定义（逐字复用冻结实现，不得改动）
+# ---------------------------------------------------------------------------
+[rules.s3]
+window_short = 5
+window_vol = 20
+roll_pct = 756
+min_vol_obs = 250
+threshold_short = -0.04
+threshold_vol_quantile = 0.70
+threshold_drawdown = 0.05
+rule = "三中二"
+
+[rules.b10]
+quiet_days = 5
+cooldown_days = 10
+
+[rules.c2]
+topo_quiet_days = 3
+fallback_quiet_days = 5
+cooldown_days = 10
+topo_source = "7 项确认票的极端计数 ext7（当日为 0 即视为拓扑平静）"
+note = "与 v0.17 实验臂乙逐字同源（规则乙＋规则丙）"
+
+[rules.confirm]
+hist_window = 756
+hist_min_obs = 120
+extreme_pct = 0.85
+judgment_window = "1..20"
+confirm_days = 2
+max_corrections = 1
+
+[rules.rolling_clock]
+step1 = "枚举与事件归属窗有交集的告警极大段"
+step2 = "每段各开一个 20 交易日钟，锚点=该段在窗内首日"
+step3 = "各钟确认日按交易日升序合并（同日按锚点先后）"
+step4 = "合并后进入与单钟完全相同的切换状态机"
+invariant = "误报段一律一段一钟，本候选不改其结构"
+
+[rules.plan]
+deep = { position = 0.5, stop = 0.20, put = true }
+shallow = { position = 0.8, stop = 0.12, put = false }
+base = 1.0
+put_premium = 0.015
+put_notional = 0.5
+put_otm = 0.95
+reentry_days = 20
+false_hold_days = 20
+
+# ---------------------------------------------------------------------------
+# 三、旧日历冻结真值（用于保真自检，逐字段不得偏差）
+# ---------------------------------------------------------------------------
+[reference_old_calendar.A]
+switched_n = 19
+e2e_p4_p3_total = 147.556072
+false_activated_n = 33
+false_cost_total = -68.597328
+net_reference = 78.958744
+alarm_day_share = 0.234305
+
+[reference_old_calendar.B]
+switched_n = 17
+e2e_p4_p3_total = 153.290268
+false_activated_n = 21
+false_cost_total = -48.271154
+net_reference = 105.019113
+alarm_day_share = 0.234305
+
+[reference_old_calendar.C]
+switched_n = 22
+e2e_p4_p3_total = 183.189440
+false_activated_n = 33
+false_cost_total = -68.597328
+net_reference = 114.592112
+alarm_day_share = 0.234305
+
+[reference_old_calendar.D]
+switched_n = 20
+e2e_p4_p3_total = 188.923636
+false_activated_n = 21
+false_cost_total = -48.271154
+net_reference = 140.652482
+alarm_day_share = 0.234305
+
+[reference_old_calendar.E1]
+net_reference = 93.953848
+switched_n = 23
+
+[reference_old_calendar.E2]
+net_reference = 126.604809
+switched_n = 20
+
+[reference_old_calendar.E3]
+net_reference = 118.724777
+switched_n = 21
+
+[reference_old_calendar.E4]
+net_reference = 87.982350
+switched_n = 15
+
+[reference_old_calendar.F]
+net_approx = 4.3
+alarm_day_share_approx = 0.173
+catchable_approx = 32
+
+[reference_old_calendar.G]
+net_approx = 30.4
+alarm_day_share_approx = 0.204
+false_episodes = 94
+false_days_total = 697
+false_cost_approx = -114.1
+catchable_approx = 29
+
+# ---------------------------------------------------------------------------
+# 四、判据与决策规则
+# ---------------------------------------------------------------------------
+[criteria]
+[criteria.gate_1_fidelity]
+name = "旧日历保真自检"
+rule = "同一套代码在旧 bench 上重跑，A/B/C/D 四项的 switched_n、e2e_p4_p3_total、false_cost_total、false_activated_n、net_reference 与 reference_old_calendar 偏差均 ≤1e-3"
+on_fail = "停止，不出新日历结果，先查实现差异"
+
+[criteria.gate_2_calendar]
+name = "日历与特征完整性"
+rule = "新 bench 6,502 行；与 trade_calendar 双向差集为空；特征缺失天数 = 19（与 v0.33 一致）"
+on_fail = "停止"
+
+[criteria.gate_3_invariance]
+name = "触发层不变量"
+rule = "A/B/C/D/E1-E4 的 identified=45、tiers=24/7/14、catchable=31、alarm_day_share 完全一致；F/G 只允许 alarm 层不同"
+on_fail = "停止"
+
+[criteria.primary]
+name = "候选增量稳定性"
+definition = "R 的独立增量 = net(rolling) − net(single)，在两套确认层上分别计算；C1 的增量 = net(B) − net(A)"
+tolerance = 1.0
+pass_rule = "新旧日历下 R 增量之差的绝对值 ≤1.0，且 C1 增量之差的绝对值 ≤1.0"
+
+[criteria.secondary]
+name = "候选排序稳定性"
+definition = "按 net_reference 降序排列 A/B/C/D"
+pass_rule = "新旧日历下排序完全一致"
+
+[criteria.tertiary]
+name = "结构性指标不变性"
+definition = "switched_n、first_type_correct_n、false_activated_n、false_episodes"
+pass_rule = "新日历下与旧日历逐项相同"
+
+[criteria.quaternary]
+name = "消融符号不变性"
+definition = "F（S3 无状态管理）应显著低于 A；G（C2）应低于 A"
+pass_rule = "符号不变，且 |Δnet| ≤1.0"
+
+[decision]
+[decision.candidate_stable]
+condition = "gate_1..3 全过 且 primary、secondary、tertiary、quaternary 全过"
+action = "论文候选表的净损益差按新日历数值替换，候选排序与增量表述不改；须在方法/局限加注基准日历修正"
+
+[decision.candidate_shift]
+condition = "gate_1..3 全过，但 primary 或 secondary 未过"
+action = "逐项报告变动；不得据此更换最终产品，须由用户拍板；禁止事后调参追回旧数字"
+
+[decision.abort]
+condition = "gate_1 或 gate_2 未过"
+action = "本版作废，不出结论"
+
+# ---------------------------------------------------------------------------
+# 五、停止规则与禁令
+# ---------------------------------------------------------------------------
+[protocol]
+stopping_rules = [
+  "旧日历保真自检未过 → 停止，不解释新日历结果",
+  "任一候选的结构性指标在换日历后变化 → 单独列出，不合并进汇总",
+  "R 增量变动 >1.0 → 记为 candidate_shift，不调参",
+  "C2 或 S3 消融符号翻转 → 停止，先查实现",
+  "任何候选在新日历下超出论文表述范围（例如切换数超出已披露区间）→ 单独标注，不静默替换",
+]
+prohibitions = [
+  "不得调整窗口、分位、票数、极值阈值以追回旧数字",
+  "不得新增论文未点名的配置",
+  "不得覆盖 v0.19 / v0.21 / v0.33 任何产物",
+  "不得把 2026 当作样本外",
+  "不得宣称候选排序稳定等于统计显著",
+  "不得把消融/未采纳配置的结果与方案一拼接成新的产品口径",
+]
+scope = [
+  "只重算触发层、告警层、确认层、判定时序与事件侧/误报段损益",
+  "不重算 v0.22 净值复利口径（另属 v0.35 议题）",
+  "不重算 v0.25/v0.26 拓扑实验、不重算 PHTI 正式绩效",
+  "不重建特征面板（19 天七票无特征，按不投票处理，与 v0.33 同口径）",
+]
+
+# ---------------------------------------------------------------------------
+# amendment_1（2026-11-22T15:26，计算完成后追加；不改任何判据、门槛与决策规则）
+# ---------------------------------------------------------------------------
+[amendment_1.execution]
+old_calendar_rows = 6483
+new_calendar_rows = 6502
+feature_missing_old = 19
+feature_missing_new = 38
+feature_missing_note = "38 = wide 面板自身暖机段 19 日 NaN（1999-12-30~2000-01-14、2005-01-04~2005-01-14）+ 新 bench 多出的 19 日无 wide 行；与 v0.33 manifest 一致"
+scripts = ["paper_drafts/run_v034_candidates.py"]
+
+[amendment_1.gates]
+gate1_fidelity = "通过：A/B/C/D/E1-E4 八臂的 net_reference、switched_n、e2e、false_cost、false_activated 全部精确复现冻结真值（≤1e-3），滚动钟四臂与 v0.21 逐位相同（183.189440 / 188.923636 / 183.030554 / 179.702414 / 190.872874 / 132.212392）"
+gate2_calendar = "通过：6,502 行；特征缺失 19/38 与 v0.33 一致"
+gate3_invariance = "通过：A-D、E1-E4 的 identified/n_pre/n_in_window/n_damage/caught_n/alarm_day_share 八臂全同（unique=1）"
+gate1_note = "保真门在修正两处实现缺陷后才通过：①误报段的切换偏移误用绝对索引（应为 day-i），导致误报成本恒为 0；②特征缺失期望值误写 19（实为 38）。两处均在出结果前修正，旧日历数值已与冻结值逐位吻合"
+
+[amendment_1.results]
+[amendment_1.results.A]
+net_old = 78.958744
+net_new = 79.010771
+switched = 19
+first_type_correct = 10
+e2e_new = 147.398579
+false_cost_new = -68.387808
+false_activated = 33
+false_episodes = 83
+alarm_share_new = 0.235158
+
+[amendment_1.results.B]
+net_old = 105.019113
+net_new = 104.859346
+switched = 17
+first_type_correct = 9
+e2e_new = 153.130500
+false_cost_new = -48.271154
+false_activated = 21
+
+[amendment_1.results.C]
+net_old = 114.592112
+net_new = 114.823228
+switched = 22
+first_type_correct = 13
+e2e_new = 183.211036
+false_cost_new = -68.387808
+
+[amendment_1.results.D]
+net_old = 140.652482
+net_new = 140.671803
+switched = 20
+first_type_correct = 12
+e2e_new = 188.942957
+false_cost_new = -48.271154
+
+[amendment_1.results.E]
+E1_net_old = 93.953848
+E1_net_new = 94.141978
+E2_net_old = 126.604809
+E2_net_new = 125.902944
+E3_net_old = 118.724777
+E3_net_new = 118.955893
+E4_net_old = 87.982350
+E4_net_new = 87.822583
+switched_unchanged = true
+
+[amendment_1.results.F]
+net_old = 4.263978
+net_new = -5.269136
+e2e_new = 114.060965
+false_cost_old = -109.797
+false_cost_new = -119.330100
+false_activated_old = 60
+false_activated_new = 62
+false_episodes_old = 143
+false_episodes_new = 146
+false_days_old = 548
+false_days_new = 550
+alarm_share = 0.173024
+catchable = 32
+mechanism = "S3 无状态管理时告警=原始触发掩码，无 5 日静默与 10 日冷却平滑。补入 19 个交易日后，756 日波动分位与 20 日窗口整体平移，V0.33 已记录 11 个触发翻转日（如 2022-05-13 旧触发、新不触发），使原始段分裂：143->146 段，独立 20 日观察窗增多，激活 60->62，误报成本恶化 9.53"
+note = "这是「无平滑层对日历扰动敏感」的机制性后果，不是实现缺陷；gate1 在旧日历上复现 +4.264（论文记 +4.3）"
+
+[amendment_1.results.G]
+net_old = 30.430247
+net_new = 30.190166
+e2e_new = 144.331360
+false_cost_new = -114.141194
+false_episodes = 94
+false_days_old = 697
+false_days_new = 705
+alarm_share = 0.204399
+catchable = 29
+
+[amendment_1.results.derived]
+R_increment_7K4_old = 35.633368
+R_increment_7K4_new = 35.812457
+R_increment_10K6_old = 35.633369
+R_increment_10K6_new = 35.812457
+C1_increment_old = 26.060369
+C1_increment_new = 25.848575
+delta_on_delta_R7 = 0.179089
+delta_on_delta_R10 = 0.179088
+delta_on_delta_C1 = -0.211794
+R_grid_old = "14.33 ~ 35.63"
+R_grid_new = "14.33 ~ 35.81"
+order_old = "D > C > B > A"
+order_new = "D > C > B > A"
+cost_per_activated_A = -2.072358
+cost_per_activated_B = -2.298626
+median_diff_switched_A = 1.156823
+median_diff_switched_B = 3.219626
+net_without_top_A = 26.621084
+net_without_top_B = 51.304771
+
+[amendment_1.criteria_verdict]
+primary = "过（|ΔR7|=0.179、|ΔR10|=0.179、|ΔC1|=0.212，均 ≤1.0）"
+secondary = "过（D>C>B>A 新旧一致）"
+tertiary = "未过（仅 F：false_activated 60->62、false_episodes 143->146；A/B/C/D/E1-E4 九项全同）"
+quaternary = "过（F 与 G 均低于 A，符号不变）"
+verdict = "candidate_shift"
+failing_item = "F（消融：S3 无告警状态管理）"
+verdict_note = "严格按预登记决策规则判定为 candidate_shift，唯一未过项是消融臂 F。不做事后放宽：若只取四个产品候选 A-D，四项判据全部通过，但该口径未在预登记中写明，故不作为本版结论。"
+
+[amendment_1.paper_impact]
+unchanged = ["45/45 识别", "24/7/14 分档", "31/45 可核算", "切换 19/17/22/20", "首判型 10/9/13/12", "误报段 83", "净账 +79.0", "净账 +140.7", "C2 误报段 94", "C2 成本 -114.1", "方案二 误报成本 -48.3", "方案一+R 事件侧 +183.2"]
+changed = ["告警日占比 23.4% -> 23.5%（A-D 五行）", "方案一事件侧 +147.6 -> +147.4", "方案一误报成本 -68.6 -> -68.4", "方案二净账 +105.0 -> +104.9", "方案二事件侧 +153.3 -> +153.1", "方案一+R 净账 +114.6 -> +114.8", "C1 增量 +26.1 -> +25.8", "R 增量 +35.6 -> +35.8", "R 其余四格上限 +35.6 -> +35.8", "7项5票 94.7 -> 94.8", "7项6票 73.6 -> 73.5", "S3 无状态管理 +4.3 -> -5.3（符号翻转）", "S3 误报成本 -109.8 -> -119.3", "5.4（三）合计改善 74.7 -> 84.3", "C2 净账 +30.4 -> +30.2", "C2 误报日 697 -> 705"]
+sign_flip = "S3 无状态管理：+4.3 -> -5.3。该臂在新日历下由正转负，B10 的边际贡献由 74.7 升至 84.3，属对 B10 有利的方向，但属实质性表述变化，须单独标注"

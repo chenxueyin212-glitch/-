@@ -1,0 +1,297 @@
+% 留出验证报告（精简版）
+% 数据源：tda_project/outputs/regime_v018_*（2026-11-16 封存开箱产物）
+\documentclass[12pt,a4paper]{ctexart}
+\usepackage{geometry}
+\geometry{left=2.6cm,right=2.6cm,top=2.5cm,bottom=2.5cm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{4pt}
+\linespread{1.25}
+\setcounter{secnumdepth}{2}
+\renewcommand{\arraystretch}{1.25}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+\begin{titlepage}
+\vspace*{3.2cm}
+\begin{center}
+{\LARGE\bfseries 留出验证报告（精简版）\par}
+\vspace{0.8cm}
+{\large 按预登记协议检验冻结规则\quad 研究档案 v0.18\par}
+\vspace{2.0cm}
+{\normalsize \textbf{作者}：潘炯铠\par\vspace{0.35em}}
+{\normalsize \textbf{项目}：持续同调量化研究项目（tda\_project）\par\vspace{0.35em}}
+{\normalsize \textbf{协议版本}：regime-sealed-validation-v0.18-2026-11-16\par\vspace{0.35em}}
+{\normalsize \textbf{报告日期}：2026 年 11 月 22 日\par}
+\vspace{2.4cm}
+\begin{minipage}{0.82\textwidth}
+\small
+\textbf{一句话结论}：我们把训练期已经定型的规则原样应用到之后的行情，没有调参。六段危机样本都触发了告警，其中两段提前约 20 至 23 个交易日；但类型判别没有通过——两段可评价样本都未判对，其中一段还按相反类型切换了预案。严格排除与训练期事件重叠的日期后，验证期只有 6 个误报日，2026 年截至 11 月 3 日为零；但观测期仅约 1.5 年，不能据此宣称误报水平已经稳定改善。
+\end{minipage}
+\end{center}
+\end{titlepage}
+
+\section{这份报告回答什么}
+
+训练期（2001-01-10 至 2025-04-07）的触发规则、告警管理方式和确认门槛，都是在同一段已知历史上比较后选定的。因此，本报告只问三个直白的问题：\textbf{规则不变，放到之后的行情上，还能否识别危机？会产生多少误报？选择危机类型和风控预案时是否可靠？}
+
+本次检验不调参、不换窗口、不重新训练，也不因结果好坏修改规则。全部结论只描述这 442 个交易日，不外推为未来实盘能力。
+
+\textbf{阅读时点说明}：本报告保存的是 2026-11-16 对冻结方案一的首次封存检验。后续候选版本曾再次读取这一验证区间，因此那些后续结果只能称为描述性历史重放，不能再算新的独立样本外证据；本报告不因后续实验改写任何数字。
+
+\section{协议与首次计算时点}
+
+\subsection{计算前写定检验规则}
+
+“预登记”是指在看到计算结果之前，先写明数据范围、判定方法和禁止修改的事项。下表记录本次检验的时间与范围。
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm}Y@{}}
+\toprule
+\textbf{项} & \textbf{内容} \\
+\midrule
+协议编号 & regime-sealed-validation-v0.18-2026-11-16 \\
+登记时刻 & 2026-11-16 22:50（计算前写定）\\
+首次计算结果 & 2026-11-16 23:09 \\
+验证窗口 & 2025-01-01 至 2026-11-03（442 个交易日）\\
+数据截止日 & 2026-11-03（行情与拓扑数据均止于此日）\\
+事先禁止 & 不调参、不换窗口、不重新训练、不为追求更好结果修改规则、不改冻结结论、不外推 \\
+修订记录 & 四条（见 2.5），均为实现口径澄清，不由结果好坏倒推 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{被检验的冻结规则}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{4.4cm}Y@{}}
+\toprule
+\textbf{环节} & \textbf{冻结内容} & \textbf{对照} \\
+\midrule
+三项条件取二的触发规则（S3） & 三项中至少两项成立才告警：最近 5 日简单收益之和 $\leq -4\%$；20 日波动高于此前 756 日历史的 70 分位；距 20 日高点的回撤 $\geq 5\%$ & 替代触发规则（REF8）\\
+五日撤销、十日冷却的告警管理（B10） & 连续 5 日没有原始触发信号便撤销告警；撤销后冷却 10 个交易日，避免频繁重启 & 不做告警状态管理（G0）\\
+状态确认与类型判别 & 7 项状态确认指标中至少 4 项达到极端条件，另有 3 项类型指标投票；同一类型连续 2 日成立且第二日确认达标才切换。深慢型采用 50\% 仓位、20\% 止损并买入认沽；浅快型采用 80\% 仓位、12\% 止损 & 不适用 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+这些规则逐字沿用训练期选定的配置，本检验未改动任何参数。用直白的话说，系统每天收盘后先决定是否提高警觉；\textbf{告警不等于立即调仓}，只有异常程度和类型证据同时达到门槛，才切换到相应预案。这里的“深慢／浅快”只是两套市场形态标签，不是对最终跌幅和持续时间的预判。
+
+\subsection{哪些日期真正属于样本外}
+
+协议登记的验证窗口从 2025-01-01 起，但 2025-01-01 至 2025-04-07 这一段仍与两个训练期事件相连：事件 16 的标签止于 2025-01-10，事件 17 的标签延伸至 2025-04-07。因此，这段时间不能算作严格意义上的新样本；不与训练期事件重叠的验证材料自 \textbf{2025-04-08} 起。
+
+这个区别会直接影响误报数字：按协议原范围计算与只计算严格样本外日期，结果相差五倍（见第四节）。本报告把两种口径并列展示，避免读者把不同分母下的数字混为一谈。
+
+\subsection{两类事件分开记账}
+
+验证期有两类事件来源：N1—N3 是按行情叙述划定的“叙事事件”，L1—L3 是按固定标签规则重新计算的“标签事件”。同一波下跌可能同时出现在两类事件中，所以必须分别核对，不能把它们当成六次彼此独立的危机，也不能混算命中率。
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{2.6cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{事件} & \textbf{区间} & \textbf{来源} \\
+\midrule
+N1 & 三月中下旬地缘输入性冲击 & 2026-03-18 至 03-23 & 项目记录的叙事背景，未独立核验 \\
+N2 & 七月上中旬科技链杠杆踩踏 & 2026-07-09 至 07-31 & 同上 \\
+N3 & 十月下旬起 AI 主线泡沫破裂 & 2026-10-20 至 11-03 & 同上，仍在演化，受数据截止日限制 \\
+L1 & 标签段一 & 2026-02-25 至 03-02 & 冻结标签规则重算 \\
+L2 & 标签段二 & 2026-06-18 至 07-10 & 同上 \\
+L3 & 标签段三 & 2026-09-09 至 09-28 & 同上 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+判定规则：每个事件都有一个允许告警计入的时间范围，即事件起点前 20 个交易日至结束后 20 个交易日，以下简称“认定窗”。告警段与认定窗有交集即记为覆盖；同一告警段可在叙事事件和标签事件两本账中各记一次。只有与两本账的任何认定窗都没有交集的告警段，才记为误报。
+
+\subsection{四条实现口径的修订记录}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.0cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{内容与理由} \\
+\midrule
+a1 & 首次计算时，同一段告警只能分配给一类事件，导致另一类被误记为漏报。修订后按既定纪律分开归因，同一告警段可在叙事事件与标签事件中各记一次。首次计算的产物作废，不进入结果。\\
+a2 & 首次告警偏移同时保留原始值和窗口内统一值：早于认定窗边界的，统一记为 $-20$ 个交易日；与训练期中位数比较时使用窗口内统一值。\\
+a3 & 误报表增加“是否涉及训练期冻结事件”一列，只作注记，不改变判定。\\
+a4 & 按登记原文修正误报定义：与两本账任一认定窗有交集的告警段不是误报；有交集但不是该事件首个命中段的，记为“关联命中段”。此前实现误把“未指定为首个命中段”当成误报，相关数字已作废并重算。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+四条修订全部发生在 2026-11-16 23:05 至 23:20、结果定稿之前，性质是口径澄清而非结果驱动。
+
+\section{结果}
+
+\subsection{告警覆盖：六段均有覆盖}
+
+六段危机样本都与至少一段告警相交，按预登记的宽识别窗口径计为 6/6 覆盖。这是本次检验最清楚的结果，但它只回答“有没有告警”，不回答“是否提前”，也不代表类型判断正确。下表中的“偏移”是首次告警日与事件起点之间相差的交易日数：负数表示提前，正数表示滞后。
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{1.4cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{首次告警日} & \textbf{偏移（原值）} & \textbf{分档} & \textbf{判型} & \textbf{系统处理结果} \\
+\midrule
+N1 & 2026-03-19 & $+1$ & 窗内 & 深慢 & 已评估、已切换 \\
+N2 & 2026-06-01 & $-27$ & 提前 & 无法判定 & 已评估、未切换 \\
+N3 & 2026-09-11 & $-20$ & 提前 & — & 随访不足跳过 \\
+L1 & 2026-03-19 & $+16$ & 结束后 & 深慢 & 已评估、已切换 \\
+L2 & 2026-06-01 & $-13$ & 提前 & 无法判定 & 已评估、未切换 \\
+L3 & 2026-07-07 & $-46$ & 提前 & 无法判定 & 已评估、未切换 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{时点：两段提前 20 至 23 个交易日}
+
+按报告采用的认定窗口径，N2 提前 23 个交易日、N3 提前 20 个交易日。两者都已到达允许计入的最早边界，因此这里的数字不代表系统最多只能提前这么久，超出窗口的部分不在本次计量范围内。L3 的原始偏移为 $-46$ 个交易日，但它来自“未来 20 个交易日最低累计收益不超过 $-10\%$”的标签规则，标签起点天然早于后续可见下跌，不能把这段时差当作预警能力。
+
+L1 的首次告警出现在事件结束之后（偏移 $+16$），不是提前预警。L1 与 N1 描述同一波下跌的不同切片；L1 所要求的 $-10\%$ 跌幅直到窗口结束后的 20 个交易日内才出现。
+
+\subsection{判型：0/2，负面结果明确}
+
+这是本次检验最重要的否定结果：告警能够覆盖事件，不等于系统能选对风控预案。
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{2.5cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{叙事定性（对照）} & \textbf{实际判定} & \textbf{性质} \\
+\midrule
+N1 & 浅快（宽基约 $-7\%$，一周修复） & 深慢，并据此切换到 50\% 仓位 & 判错，且方向相反 \\
+N2 & 浅快（板块深、宽基浅） & 无法判定 & 未做出判断 \\
+N3 & 深慢 & — & 数据截止，无法评价 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+两段具有事后对照、可以评价的样本中，没有一段判对。N1 的问题尤其明确：系统不是简单地“没有判断”，而是\textbf{判成了相反的类型，并据此切换到 50\% 仓位加认沽的深慢预案}。对一场一周内修复的浅快冲击，这一动作的事后成本高于不切换。
+
+“无法判定”在这里是\textbf{产品判定层的结果}：异常程度或类型证据没有达到切换条件，系统因此不强行选择深慢或浅快。它不等于漏报；危机告警覆盖仍为 6/6。还要注意，结果表中的“无法判定”字段在未发生确认切换时会保留默认值，不能把它当作逐日类型投票的完整轨迹。
+
+\subsection{误报：报告观测值，不宣称稳定改善}
+
+按协议登记的完整窗口计算，五日撤销、十日冷却的告警管理规则（B10）在 442 个交易日里产生 3 个误报段、36 个误报日，占 8.1\%，折合 19.8 个误报日/年。三个误报段的日期见第四节。
+
+2026-01-01 至 2026-11-03 的误报为零。
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.6cm}Y@{}}
+\toprule
+\textbf{对照层} & \textbf{告警段} & \textbf{告警日} & \textbf{误报段} & \textbf{误报日/年} & \textbf{训练期同列} \\
+\midrule
+触发规则（S3） & 13 & 61 & 2 & 3.3 & 9.9 \\
+\textbf{告警管理（B10，选定）} & \textbf{8} & \textbf{113} & \textbf{3} & \textbf{19.8} & \textbf{29.9} \\
+替代触发（REF8） & 54 & 167 & 37 & 34.1 & 61.6 \\
+不做告警状态管理（G0） & 15 & 78 & 4 & 12.6 & 28.2 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+一个容易误读的地方是：加入告警管理（B10）后，误报日反而\textbf{多于}只保留原始触发信号（S3）的结果，因为连续 5 日无信号才撤销、撤销后再冷却 10 日，会改变并可能延长误报段。它的价值是减少反复撤销、重启和实际激活成本，不是压缩告警日总数。
+
+\section{误报为什么要报两个口径}
+
+“19.8 日/年”和“3.8 日/年”来自同一份告警记录，差别只在统计范围：前者按协议保留全部 442 个交易日，后者剔除仍与训练期事件重叠的日期。把三个误报段拆开就能看清：
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{2.2cm}Y@{}}
+\toprule
+\textbf{误报段} & \textbf{天数} & \textbf{冻结事件波及} & \textbf{性质} \\
+\midrule
+2025-01-02 至 01-23 & 16 & 事件 16 & 与训练期冻结事件认定窗重叠，非纯样本外 \\
+2025-04-07 至 04-24 & 14 & 事件 17 & 同上，非纯样本外 \\
+2025-11-21 至 11-28 & 6 & 无 & 纯样本外 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+两个数字各有用途，但不能混合解释：
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{1.8cm}>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.2cm}Y@{}}
+\toprule
+\textbf{口径} & \textbf{起算日} & \textbf{交易日} & \textbf{误报日} & \textbf{日/年} & \textbf{占比} \\
+\midrule
+协议口径（封存登记） & 2025-01-01 & 442 & 36 & 19.8 & 8.1\% \\
+纯样本外口径 & 2025-04-08 & 381 & 6 & 3.8 & 1.6\% \\
+训练期同口径 & 2001-01-10 & — & — & 29.9 & 12.0\% \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{关键区别}：协议口径的 36 个误报日中，有 30 个（83\%）位于报告已标出的“非纯样本外”区间。若直接拿 19.8 与训练期的 29.9 相比，会得到“下降约三分之一”；若只机械比较严格样本外口径，则对应数字为 29.9 与 3.8，差异约 87\%。这两个百分比回答的不是同一个问题。
+
+但\textbf{87\% 也不能作为已证实的改善幅度}：严格样本外只有 381 个交易日和 6 个误报日，估计很不稳定；协议口径又包含 30 个与训练期事件相连的误报日。因此，本报告只作如下表述：
+
+\begin{quote}
+严格样本外区间只出现 6 个误报日（2025-11-21 至 11-28），2026 年截至 11 月 3 日为零；观测期仅约 1.5 年，只能说明这段时期未出现训练期量级的误报，不能据此断言误报水平已经持续改善。
+\end{quote}
+
+\section{与训练期的对照}
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{3.6cm}Y@{}}
+\toprule
+\textbf{指标} & \textbf{训练期（2001-01-10 至 2025-04-07）} & \textbf{验证期（2025-01-01 至 2026-11-03）} \\
+\midrule
+危机告警覆盖 & 45/45（宽识别窗） & 6/6 \\
+时点分档 & 24 起点前、7 窗内、14 结束后 & 1 窗内、5 提前（2 段提前 20 至 23 日）\\
+实际切换 & 19/45 & 2/6（N1 与 L1，两本账各记一次）\\
+误报日/年（选定层） & 29.9 & 19.8（协议口径）／3.8（纯样本外）\\
+类型判别（与评价标签一致） & 首次 10/19、最终 7/19 & 0/2 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+读这张表要注意两件事。第一，两边样本量相差很大（45 段对 6 段），验证期的任何比例都很不稳定。第二，训练期 45/45 与验证期 6/6 都采用“起点前 20 日至结束后 20 日”的宽识别窗，因此“是否覆盖”可以对照；但告警有多早、事件是否已经结束，必须另看时点分档，不能由 6/6 推出“全部提前”。
+
+\section{结论边界：六条不得越界}
+
+\begin{enumerate}[leftmargin=2em,itemsep=2pt]
+\item \textbf{6/6 不是分类准确率，也不是全部提前}。六段样本中，三段按行情叙述划定，三段按固定标签规则识别；该数字只表示告警覆盖。
+\item \textbf{“无法判定”不等于漏报}。它表示产品的确认或类型证据不足，系统没有强行选择预案；与危机是否被告警覆盖是两个问题。
+\item \textbf{判型结论是否定的}。两段可评价样本均未判对，N1 还判成相反类型并执行深慢预案。样本虽小，也不能把这一负面结果写成“已经可靠”。
+\item \textbf{误报只能报告观测值，不能宣称稳定改善}。理由见第四节。
+\item \textbf{N3 的随访不足是数据边界}。数据止于 2026-11-03，叙事背景称事件持续至 11-16；本报告既不把它记为成功，也不把它记为失败。
+\item \textbf{全部为历史数据上的规则检验}。本报告记录过一次冻结规则的封存验证，但后续候选已重复读取该区间；这里没有新增前瞻数据或实盘结果，也未计一般换手摩擦与滑点。任何“实盘可用”的说法都超出报告范围。
+\end{enumerate}
+
+\section{已知瑕疵：旧基准日历漏了 19 个交易日}
+
+本次封存检验使用的旧版基准序列有 6,483 个交易日。事后核查发现，它漏掉了 19 个交易日，完整序列应有 6,502 个交易日。在本报告的 442 日窗口内，漏掉的只有 \textbf{2026-10-15} 一天，当日万得全A 下跌 2.28\%。
+
+该日不在任何事件认定窗内（N3 从 2026-10-20 开始，L1—L3 均在 2026 年 9 月及以前），所以 6/6 覆盖、时点分档与判型结论不受直接影响。但补入该日后，5 日与 20 日滚动窗口会略有移动，理论上可能改变个别误报段的边界。
+
+\textbf{本报告没有按修正后的日历重新计算}，这是必须保留的口径缺口。若要闭合，应另立版本、重新预登记并重跑，不能把现有数字冒充为修正日历后的结果。
+
+\section{产物}
+
+\begin{center}\footnotesize
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{6.3cm}Y@{}}
+\toprule
+\textbf{文件} & \textbf{内容} \\
+\midrule
+regime\_\hspace{0pt}sealed\_\hspace{0pt}validation\_\hspace{0pt}v0.18.toml & 预登记协议全文，含四条修订记录 \\
+regime\_\hspace{0pt}v018\_\hspace{0pt}summary.json & 四层汇总（告警段、误报段、日/年、训练期同列）\\
+regime\_\hspace{0pt}v018\_\hspace{0pt}episode\_\hspace{0pt}attribution.csv & 逐事件归因（4 层 $\times$ 6 事件）\\
+regime\_\hspace{0pt}v018\_\hspace{0pt}false\_\hspace{0pt}alarm\_\hspace{0pt}sealed.csv & 误报段明细（46 行，含冻结事件波及列）\\
+regime\_\hspace{0pt}v018\_\hspace{0pt}benchmark\_\hspace{0pt}episode\_\hspace{0pt}facts.csv & 各认定窗的区间收益与最大回撤 \\
+build\_\hspace{0pt}v018\_\hspace{0pt}sealed\_\hspace{0pt}validation.py & 生成脚本 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+完整逐事件表、逐误报段表、四层全部指标与协议条款全文见《留出验证报告（全量版）》。
+
+\vspace{1.2em}
+\begin{center}\small
+\rule{0.6\textwidth}{0.4pt}\\[0.4em]
+本报告记录冻结规则在历史验证段上的表现，不构成对未来行情的预测或实盘收益承诺。
+\end{center}
+
+\end{document}

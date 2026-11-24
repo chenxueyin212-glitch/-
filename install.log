@@ -1,0 +1,155 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting numpy
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/12/33/fefe62073dc8acfd0f2b9ed7c003af2f50aa61555e113e6db02b8f79f145/numpy-2.5.4-cp312-cp312-win_amd64.whl (12.6 MB)
+     --------------------------------------- 12.6/12.6 MB 23.2 MB/s eta 0:00:00
+Collecting scipy
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/39/e7/979fd14e75008623df31ba70d6bb144700f68feadcea042021c06a05bf82/scipy-1.18.1-cp312-cp312-win_amd64.whl (36.7 MB)
+     --------------------------------------- 36.7/36.7 MB 24.8 MB/s eta 0:00:00
+Collecting pandas
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/10/72/06aefff8fe5efc5e1ca8bfb2695b648a435358f6dc224d4e40159314181a/pandas-3.1.0-cp312-cp312-win_amd64.whl (10.7 MB)
+     --------------------------------------- 10.7/10.7 MB 37.2 MB/s eta 0:00:00
+Collecting scikit-learn
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/72/8d/27c054166bac671770d1ea0ef7716134fe8119c0df224a58c89fd735a61c/scikit_learn-1.9.1-cp312-cp312-win_amd64.whl (8.3 MB)
+     ---------------------------------------- 8.3/8.3 MB 26.9 MB/s eta 0:00:00
+Collecting matplotlib
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/04/93/0d239bde12b308262265c2d98909b2f0ecad2b5deeae96241642e822e9c7/matplotlib-3.11.2-cp312-cp312-win_amd64.whl (9.3 MB)
+     ---------------------------------------- 9.3/9.3 MB 30.6 MB/s eta 0:00:00
+Collecting gudhi
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/ee/60/63ee83f1130f748e793277337a932c5f90e08a63791a554be753ec70a04e/gudhi-3.13.0-cp312-cp312-win_amd64.whl (3.9 MB)
+     ---------------------------------------- 3.9/3.9 MB 29.1 MB/s eta 0:00:00
+Collecting ripser
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/56/c3/80858e5a856cefe87bb9e99ff47e03f204e5a660c1547e6320db627e4c7f/ripser-0.6.15-cp312-cp312-win_amd64.whl (166 kB)
+Collecting persim
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/84/2f/1ad548696a7adb9eaccce88242c48753c848a4cee71a1e14679b57ebc6f3/persim-0.4.1-py3-none-any.whl (49 kB)
+Collecting python-dateutil>=2.9.0 (from pandas)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/2f/a9/52b89563d154433d79b51ed1eb4842bf7334cb2696891a7fe135618853d7/python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+Collecting tzdata (from pandas)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/0a/66/9a06c2227fedfd4919f0eaaa8b94377d9730882a7e4f95823c9a331ab5e1/tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+Collecting joblib>=1.4.0 (from scikit-learn)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/18/53/84099323c2ec4be98d935f63c033ac4151ee83836ca1050ede3b3aadf155/joblib-1.6.0-py3-none-any.whl (306 kB)
+Collecting narwhals>=2.0.1 (from scikit-learn)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/cf/82/8ef9c7e0f50493307a49c09cfa7f00c5a778b6d1921f7b2dabe1d3a5809e/narwhals-2.28.0-py3-none-any.whl (490 kB)
+Collecting threadpoolctl>=3.5.0 (from scikit-learn)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/43/3f/f88a53f60a472b46f4023f56d204dd7de33d34c5d2acbfa0d70a674e639e/threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+Collecting contourpy>=1.0.1 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/50/a9/dab08786bb4d77ef9a046b3c1be923be4e73c5d07d91f5a54e8ea9b09e41/contourpy-1.4.0-cp312-cp312-win_amd64.whl (234 kB)
+Collecting cycler>=0.10 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Collecting fonttools>=4.28.2 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/1c/3e/ef786310a3774ae7aacaa288ca6d1e1dfd03c24214137478e4b630b76af0/fonttools-4.68.0-cp312-cp312-win_amd64.whl (2.5 MB)
+     ---------------------------------------- 2.5/2.5 MB 29.1 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/6e/7c/7b210498f9f92e1cd7855f260fa69ef056881087b199ee20c208f0e4189a/kiwisolver-1.5.1-cp312-cp312-win_amd64.whl (70 kB)
+Collecting packaging>=20.0 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl (129 kB)
+Collecting pillow>=9 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/ff/cd/73a79ecdc822076002eb24b5e1e4a530b0bb5310fcb6d239abbec877110b/pillow-13.0.0-cp312-cp312-win_amd64.whl (7.3 MB)
+     ---------------------------------------- 7.3/7.3 MB 23.6 MB/s eta 0:00:00
+Collecting pyparsing>=3 (from matplotlib)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/38/bb/d215ee7c73b61497b28a5503f9f53523f294fcc936762b7caf90e0c1c2b5/pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Collecting Cython (from ripser)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/4c/6b/de4b5b3f43bccd82ef48071a33c48315098867eafe6ae3a39f1064f8d331/cython-3.3.1-cp312-cp312-win_amd64.whl (2.9 MB)
+     ---------------------------------------- 2.9/2.9 MB 27.8 MB/s eta 0:00:00
+Collecting deprecated (from persim)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/82/f0/07de837adfa09d592747b82fd74316e88285d2d7057551f30e4b5ef81bd8/deprecated-3.0.1-py3-none-any.whl (22 kB)
+Collecting cloudpickle>=3.0 (from joblib>=1.4.0->scikit-learn)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/88/39/799be3f2f0f38cc727ee3b4f1445fe6d5e4133064ec2e4115069418a5bb6/cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Collecting wrapt<3,>=1.16 (from deprecated->persim)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/7d/0a/ab645f8b4c594cac2db49bbc805bff97a9d3f2944061b865f67e0351b6c8/wrapt-2.5.2-cp312-cp312-win_amd64.whl (106 kB)
+Installing collected packages: wrapt, tzdata, threadpoolctl, pyparsing, pillow, packaging, numpy, narwhals, kiwisolver, gudhi, fonttools, Cython, cycler, cloudpickle, scipy, python-dateutil, joblib, deprecated, contourpy, scikit-learn, pandas, matplotlib, persim, ripser
+Successfully installed Cython-3.3.1 cloudpickle-3.1.2 contourpy-1.4.0 cycler-0.12.1 deprecated-3.0.1 fonttools-4.68.0 gudhi-3.13.0 joblib-1.6.0 kiwisolver-1.5.1 matplotlib-3.11.2 narwhals-2.28.0 numpy-2.5.4 packaging-26.3 pandas-3.1.0 persim-0.4.1 pillow-13.0.0 pyparsing-3.3.3 python-dateutil-4.0.0 ripser-0.6.15 scikit-learn-1.9.1 scipy-1.18.1 threadpoolctl-3.7.0 tzdata-2026.6 wrapt-2.5.2
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: C:\Users\Lenovo\WorkBuddy\2026-10-28-22-54-51\tda_project\.venv\Scripts\python.exe -m pip install --upgrade pip
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting giotto-tda
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/f5/dd/42912c7088181067cdcfbe0a07b88f441e4f8ded1357515405bd889c3fe8/giotto_tda-0.6.2-cp312-cp312-win_amd64.whl (1.3 MB)
+     ---------------------------------------- 1.3/1.3 MB 7.9 MB/s eta 0:00:00
+Requirement already satisfied: numpy>=1.19.1 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from giotto-tda) (2.5.4)
+Requirement already satisfied: scipy>=1.5.0 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from giotto-tda) (1.18.1)
+Requirement already satisfied: joblib>=0.16.0 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from giotto-tda) (1.6.0)
+Collecting scikit-learn==1.3.2 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/fe/6b/db949ed5ac367987b1f250f070f340b7715d22f0c9c965bdf07de6ca75a3/scikit_learn-1.3.2-cp312-cp312-win_amd64.whl (9.1 MB)
+     ---------------------------------------- 9.1/9.1 MB 22.7 MB/s eta 0:00:00
+Collecting giotto-ph>=0.2.1 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/b3/48/cebadab04348f80a1ddbd703d547e40aa0504f0f1f91a0b5e36c7dd2d902/giotto_ph-0.2.4-cp312-cp312-win_amd64.whl (408 kB)
+Collecting pyflagser>=0.4.3 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/9f/53/685a0449c83c98846ec098dde51f9462e7e0d24d09e527762aabf48e80ad/pyflagser-0.4.7-cp312-cp312-win_amd64.whl (565 kB)
+     -------------------------------------- 565.7/565.7 kB 9.5 MB/s eta 0:00:00
+Collecting igraph>=0.9.8 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/af/77/a85b3745cf40a0572bae2de8cd9c2a2a8af78e5cf3e880fc0a249114e609/igraph-1.0.0-cp39-abi3-win_amd64.whl (3.2 MB)
+     ---------------------------------------- 3.2/3.2 MB 21.1 MB/s eta 0:00:00
+Collecting plotly>=4.8.2 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/e5/7d/905a3a3d51087515719058c94cfbda2ff0fc14417c20d557ae3e82d8b250/plotly-7.1.0-py3-none-any.whl (9.7 MB)
+     ---------------------------------------- 9.7/9.7 MB 22.3 MB/s eta 0:00:00
+Collecting ipywidgets>=7.5.1 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/c3/55/298e9b3b864a198234997e87a1471c1b17d7f3546ace6d18fb5cf1ce24b2/ipywidgets-8.1.9-py3-none-any.whl (140 kB)
+Collecting numpy>=1.19.1 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/16/2e/86f24451c2d530c88daf997cb8d6ac622c1d40d19f5a031ed68a4b73a374/numpy-1.26.4-cp312-cp312-win_amd64.whl (15.5 MB)
+     --------------------------------------- 15.5/15.5 MB 24.4 MB/s eta 0:00:00
+Requirement already satisfied: threadpoolctl>=2.0.0 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from scikit-learn==1.3.2->giotto-tda) (3.7.0)
+Collecting texttable>=1.6.2 (from igraph>=0.9.8->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/b9/4d/4de8896d9edcfb421e54d236b22a62be3827ca195ff649cad6fcae660f04/texttable-1.7.2-py2.py3-none-any.whl (10 kB)
+Collecting comm>=0.1.3 (from ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/60/97/891a0971e1e4a8c5d2b20bbe0e524dc04548d2307fee33cdeba148fd4fc7/comm-0.2.3-py3-none-any.whl (7.3 kB)
+Collecting ipython>=6.1.0 (from ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/bb/1c/91da4a1c541b75e97eb99d09c6a9b0534de55bb4a466669d1170e39b915c/ipython-9.18.1-py3-none-any.whl (649 kB)
+     -------------------------------------- 649.8/649.8 kB 6.2 MB/s eta 0:00:00
+Collecting traitlets>=4.3.1 (from ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/ad/66/0d785f0bc5e4315a96c989bb476d0fc07ea4f85132550c7b156ca2035d52/traitlets-5.16.1-py3-none-any.whl (86 kB)
+Collecting widgetsnbextension~=4.0.16 (from ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/34/95/40e17e20046b7bc820d29d09ae84ec157ec8dd6e6f6cd722626292c31b2e/widgetsnbextension-4.0.16-py3-none-any.whl (2.2 MB)
+     ---------------------------------------- 2.2/2.2 MB 15.7 MB/s eta 0:00:00
+Collecting jupyterlab_widgets~=3.0.17 (from ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/33/ef/6d27fc118f58cb24886da413545a7efb0853d405fddbfd8b2d9ac09fbed4/jupyterlab_widgets-3.0.17-py3-none-any.whl (217 kB)
+Requirement already satisfied: cloudpickle>=3.0 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from joblib>=0.16.0->giotto-tda) (3.1.2)
+Requirement already satisfied: narwhals>=1.15.1 in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from plotly>=4.8.2->giotto-tda) (2.28.0)
+Requirement already satisfied: packaging in c:\users\lenovo\workbuddy\2026-10-28-22-54-51\tda_project\.venv\lib\site-packages (from plotly>=4.8.2->giotto-tda) (26.3)
+INFO: pip is looking at multiple versions of scipy to determine which version is compatible with other requirements. This could take a while.
+Collecting scipy>=1.5.0 (from giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/2b/54/9a9edb45345bd6744da5ddfb6628e5d5185920494c6a67ec45b6381004cb/scipy-1.18.0-cp312-cp312-win_amd64.whl (36.6 MB)
+     --------------------------------------- 36.6/36.6 MB 24.7 MB/s eta 0:00:00
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/a2/84/dc08d77fbf3d87d3ee27f6a0c6dcce1de5829a64f2eae85a0ecc1f0daa73/scipy-1.17.1-cp312-cp312-win_amd64.whl (36.5 MB)
+     --------------------------------------- 36.5/36.5 MB 34.2 MB/s eta 0:00:00
+Collecting colorama>=0.4.4 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Collecting ipython-pygments-lexers>=1.0.0 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/d9/33/1f075bf72b0b747cb3288d011319aaf64083cf2efef8354174e3ed4540e2/ipython_pygments_lexers-1.1.1-py3-none-any.whl (8.1 kB)
+Collecting jedi>=0.18.2 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/be/c7/71eb0d51cdcbb63b857c931aa4e9218b078b5d9f8ecd383b234f28fe7b0f/jedi-0.20.1-py2.py3-none-any.whl (4.9 MB)
+     ---------------------------------------- 4.9/4.9 MB 32.8 MB/s eta 0:00:00
+Collecting matplotlib-inline>=0.1.6 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/41/09/5b161152e2d90f7b87f781c2e1267494aef9c32498df793f73ad0a0a494a/matplotlib_inline-0.2.2-py3-none-any.whl (9.5 kB)
+Collecting prompt_toolkit<3.1.0,>=3.0.41 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/54/6f/84908cad2d6aa5144abcf7b42709fe4fdb459bc640ec7ac5786e7693dabc/prompt_toolkit-3.0.53-py3-none-any.whl (392 kB)
+Collecting psutil>=7 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl (137 kB)
+Collecting pygments>=2.14.0 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl (1.3 MB)
+     ---------------------------------------- 1.3/1.3 MB 15.9 MB/s eta 0:00:00
+Collecting stack_data>=0.6.0 (from ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl (24 kB)
+Collecting parso<0.9.0,>=0.8.7 (from jedi>=0.18.2->ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/99/5d/8268b644392ee874ee82a635cd0df1773de230bde356c38de28e298392cc/parso-0.8.7-py2.py3-none-any.whl (107 kB)
+Collecting wcwidth>=0.1.4 (from prompt_toolkit<3.1.0,>=3.0.41->ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/d6/f1/c123f902bc2ff9e9c2ab66241b8872204df87cbb18ecdf035e120860fedc/wcwidth-0.9.4-cp310-abi3-win_amd64.whl (597 kB)
+     ------------------------------------- 597.8/597.8 kB 10.8 MB/s eta 0:00:00
+Collecting executing>=1.2.0 (from stack_data>=0.6.0->ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/4d/dd/8bc67e7d5ffc1d88aa5af511189dfb76dc4e1e5b808fab186146ef2663e5/executing-2.3.0-py3-none-any.whl (29 kB)
+Collecting asttokens>=2.1.0 (from stack_data>=0.6.0->ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/d4/2b/04b8a15f3a1c77bc79ddf5c73875327f34b4fa75982df2b76e45e402d364/asttokens-3.0.2-py3-none-any.whl (28 kB)
+Collecting pure-eval (from stack_data>=0.6.0->ipython>=6.1.0->ipywidgets>=7.5.1->giotto-tda)
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/6d/18/83376915176eb058cb86470eb7396388a13350b09a8f233a79303bbcbc5b/pure_eval-0.2.4-py3-none-any.whl (11 kB)
+Installing collected packages: texttable, pure-eval, widgetsnbextension, wcwidth, traitlets, pygments, psutil, plotly, parso, numpy, jupyterlab_widgets, igraph, executing, comm, colorama, asttokens, stack_data, scipy, prompt_toolkit, matplotlib-inline, jedi, ipython-pygments-lexers, scikit-learn, pyflagser, ipython, ipywidgets, giotto-ph, giotto-tda
+  Attempting uninstall: numpy
+    Found existing installation: numpy 2.5.4
+    Uninstalling numpy-2.5.4:
+      Successfully uninstalled numpy-2.5.4
+  Attempting uninstall: scipy
+    Found existing installation: scipy 1.18.1
+    Uninstalling scipy-1.18.1:
+      Successfully uninstalled scipy-1.18.1
+  Attempting uninstall: scikit-learn
+    Found existing installation: scikit-learn 1.9.1
+    Uninstalling scikit-learn-1.9.1:
+      Successfully uninstalled scikit-learn-1.9.1

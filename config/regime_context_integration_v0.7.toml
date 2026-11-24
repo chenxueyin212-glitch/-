@@ -1,0 +1,77 @@
+# =====================================================================
+# v0.7 升版预登记 —— 第五版完整危机上下文与第六版早期真实补算整合
+# 登记时间：2026-11-11，任何 v0.7 正式产物生成之前
+# 用户裁决：能否把第6版文件的内容和第五版的文件的内容合并，生成一个第7版？
+# =====================================================================
+
+[meta]
+version = "0.7"
+registered_at = "2026-11-11T22:42:16+08:00"
+status = "PRE-REGISTERED_BEFORE_V07_INTEGRATION"
+kind = "read-only integration of accepted descriptive artefacts; no re-judgement"
+parents = "config/regime_split_check_v0.5.toml; config/regime_early_extension_v0.6.toml"
+freeze_guard = "v0.1—v0.6、all14/all17/all19、config/study.toml 及全部旧报告一字不改；所有新产物使用 v07 / v0.7 标识"
+no_result_driven_selection = "只按日期与既定分线合并已验收产物；不查看曲线后选择日期、面板、指标或判定，不删除否定结果"
+
+[inputs]
+v05_wide = "outputs/regime_v05_split_wide.csv"
+v05_labels = "outputs/regime_v05_daily_labels.csv"
+v05_events = "outputs/regime_v05_crisis_events.csv"
+v05_judgement = "outputs/regime_v05_verdicts.json; outputs/regime_v05_conclusion_ledger.csv; outputs/regime_v05_grid.csv"
+v05_context = "outputs/crisis_context_v05_report.html 及第五版八张上下文产物"
+v06_front = "outputs/regime_v06_early_descriptive_daily.csv"
+v06_acceptance = "outputs/regime_v06_early_manifest.json; outputs/crisis_context_v06_early_manifest.json"
+v06_context = "outputs/crisis_context_v06_early_report.html 及第六版早期曲线产物"
+hash_policy = "整合前后记录并逐项核对全部上述关键输入的 SHA256、字节数与修改时间；任何变化即失败停止"
+
+[merge]
+output_wide = "outputs/regime_v07_split_wide.csv"
+schema = "沿用第五版六十七列，列名、列序、日期、标签、掩码、事件编号与收益口径不变"
+front = "1999-12-30..2012-12-28 共 3144 行取第六版 descriptive_daily；其中十八项摘要及十六行业、行业相关点云存在标记允许按第六版更新"
+back = "2012-12-31..2026-11-03 共 3339 行逐字段复制第五版；不得重排、重算或格式化数值"
+front_invariants = "除十八项 a16_/a27_/b_ 摘要与 line_a16_present、line_b_present 外，前段所有字段必须与第五版逐值一致；特别包括全部标签、状态、危机事件编号与基准字段"
+calendar = "合并后 6483 个互不重复且递增的标签交易日，与第五版完整日历逐日一致"
+a16 = "前段使用第六版已验收的十六行业结果；2005-01-04 起沿用同面板同算法冻结段，保留旧计算起点造成的预热空白"
+b = "前段使用第六版已验收的较少节点行业相关点云结果；逐日节点资格与名单仍以第六版审计为准"
+a27 = "前段全部留空且 line_a27_present=0；禁止把 a16 数值复制到 a27，禁止跨面板拼接"
+missing = "缺失与结构性无定义保持空值，不补零、不回填；真实计算的零个环或零个空腔保留为零"
+
+[context_export]
+source = "以第五版只读导出器为模板，仅把摘要输入替换为第七版整合宽表，并使用 crisis_context_v07_ 新前缀"
+events = "45 个统计事件＋2 个外部描述性锚点，共 47 条；展示统一编号 01—47，工程原编号继续保留在映射和悬停"
+windows = "737 个统计危机日＋2 个外部锚点；事件前后各 20 个标签交易日；日级窗 30299 行、事件窗 2619 行、中心日 739 行、分段 141 行"
+prices = "基准、行情、收益、成交额、外部锚点及两层标签全部沿用第五版输入，不重新计算标签或更改事件"
+profiles = "相对日剖面与分段均值只基于第七版描述性宽表重新汇总，明确这是展示统计更新，不是显著性检验或十四条推测重判"
+report = "保留第五版危机史、金融定性、成因伤害、十四条推测及文献、两套点云解释、全部交互表和曲线；嵌入第六版早期曲线，不作两份网页首尾拼接"
+
+[judgement_boundary]
+historical_result = "第五版冻结判定仅为历史结果展示：5 支持／2 矛盾／7 无法判定；主判据甲与乙均无法判定"
+forbidden = "不得把 regime_v07_split_wide.csv 送入判定引擎；不运行 bootstrap、显著性、十四条推测重判、绩效、IC、夏普、PR-AUC、命中率、提前量、召回率、误报、仓位或阈值反选"
+interpretation = "第七版新增早期曲线和描述性汇总不能写成第五版判定得到加强、削弱或改变；不得外推为持续同调对 A 股危机预警有效或无效"
+gate1 = "暂停，须先与用户讨论设计"
+final_2025_test = "封存，不读取、不评分"
+gate2 = "未启动"
+phti_performance = "未运行"
+
+[acceptance]
+wide = "6483×67；前段与第六版逐字段一致、后段与第五版逐字段一致、前段非摘要不变量一致、前段二十七行业全空"
+coverage = "前段 28 个事件的十六行业与行业相关点云均为 28／28 整窗组覆盖；覆盖期内待核空值为零；真实零值不得当作缺失"
+export = "八张第七版上下文产物行数、列数与第五版规格一致；全部 47 事件×22 个可选指标可审计，载荷字段无遗漏"
+determinism = "整合宽表与八张上下文数据产物独立双跑字节一致；报告由相同载荷生成并做结构校验"
+interaction = "47 个事件全部可切换；22 项曲线指标与 4 类相对日锚点全部有载荷；早期事件曲线含真实非空数据；无空白坐标轴冒充零值"
+freeze = "整合前后第五版、第六版及研究配置哈希、大小、修改时间不变；旧版产物不覆盖"
+language = "报告可见文本使用中文全称，工程字段名与英文原名只放悬停；统一使用用户指定的‘威尔斯特拉斯距离’"
+
+[outputs]
+wide = "outputs/regime_v07_split_wide.csv"
+integration_manifest = "outputs/regime_v07_integration_manifest.json"
+context_prefix = "outputs/crisis_context_v07_"
+report = "outputs/crisis_context_v07_report.html"
+scripts = "src/regime_check/build_v07_integrated_wide.py; src/regime_check/export_crisis_context_v07.py; src/regime_check/build_crisis_context_report_v07.py"
+
+# 追加修订，不回改以上预登记原文。首次整合在写出任何 v0.7 数据前停止。
+[amendment_2026_11_11_wide_schema]
+registered_at = "2026-11-11T22:42:16+08:00"
+observed = "第五版六十七列宽表实际包含五十项 a16_/a27_/b_ 分线字段；报告展示其中十八项。存在标记只有 line_a16_present 与 line_a27_present，没有 line_b_present。"
+ruling = "前段允许变化字段改为全部五十项分线摘要及 line_a16_present；其余十六个字段逐值不变。前段 line_a27_present 仍必须为零。报告十八项只是展示子集，不得据此误称宽表只有十八项摘要。"
+audit_trail = "首次运行在摘要字段数断言处停止，未写出整合宽表、未生成报告、未改变任何输入或判定。"

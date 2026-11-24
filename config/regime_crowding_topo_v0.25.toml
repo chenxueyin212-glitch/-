@@ -1,0 +1,112 @@
+# regime_crowding_topo_v0.25.toml —— 条件化拓扑刻画抱团瓦解
+# 先登记后计算。登记时钟读数 2026-11-21T20:31:47+08:00，早于本臂任何新指标输出。
+# 本臂是探索性机制实验，不改写 v0.05—v0.24 的冻结标签、事件、分型、产品口径与论文结论。
+# 目的不是提高 S3 召回或净账，而是检验：锁定「事前强势组」后，局部拓扑能否解释其事后瓦解。
+
+[meta]
+version = "v0.25"
+registered_at = "2026-11-21T20:31:47+08:00"
+status = "exploratory_preregistered"
+purpose = "条件化持久性 + 嵌入存活 + 固定尺度连通寿命 + 彩色Mapper 四法对抱团瓦解的增量检验"
+output_prefix = "regime_v025_crowding_topo"
+parent_results = ["regime_v08_typology_event_profiles.csv", "regime_v07_split_wide.csv", "quintile_reversal.csv", "topo_param_scan.csv"]
+supersedes = ""
+
+[设计来源与必须披露的更正]
+user_approved_plan = "2026-11-21 对话确认尝试方法1—4；本文件是该方案的可执行冻结版"
+data_audit_correction = "口头方案原写‘31行业面板’，核对后发现现有b_线实际为申万二级行业、节点数约60—131、30日相关距离；本臂改用b_线同口径，避免新造面板。此项在计算前登记。"
+prior_exposure = "设计前已看过第20—21节的既有结果与形态标签，因此本臂只能是探索性/假设生成，不能冒充独立确认；2026段不进入开发样本。"
+zigzag_limitation = "Windows环境无Dionysus；本臂方法3实现为固定尺度H0主导连通分支寿命，作为zigzag思想的离散近似，报告须明示，不声称完整zigzag条形码。"
+
+[数据]
+db = "a_share_pit/tdx_central.db"
+industry_prices = "tda_project/outputs/xy_replication_data.db: sw2_daily + sw2_meta"
+legacy_prices = "tda_project/outputs/xy_sw2014_corrected_data.db: sw2014_daily + sw2014_meta"
+benchmark = "tda_project/outputs/xy_replication_data.db: benchmark_daily(code=801003)"
+events = "tda_project/outputs/regime_v05_crisis_events.csv"
+stock_style = "paper_drafts/quintile_reversal.csv"
+classification_switch = "2021-12-13；沿用既有b_线，之前用申万2014版，之后用当前申万二级；不跨断点拼接点云"
+start_floor = "2007-01-04（由b_线可用性与250日前置窗共同决定，具体以数据完整性审计为准）"
+end_train = "2025-04-07"
+end_sample = "2025-04-07；2026年段不读取、不计算、不参与任何选择"
+
+[共同口径]
+point = "申万二级行业"
+distance = "sqrt(2*(1-rho))，rho为行业30日简单收益相关；与b_线一致"
+window = 30
+group_definition = "在事件起点t0前第21个交易日s=t0-21，按截至s的过去250个交易日简单收益排序，取前20%行业为G；同规模后20%为B"
+group_freeze = "G在事件观察期内完全固定；不得在危机中重新聚类或重排"
+min_group_size = 5
+eligibility = "G内行业须在s、t0+5、t0+10、t0+20均有完整30日价格窗；缺失行业从该事件的G中剔除，剔除数与名单必须输出"
+horizons = [5, 10, 20]
+baseline = "s=t0-21（与250日分组日相同，避免分组与基准使用不同信息集）"
+event_sample = "所有同时具备250日行业收益、baseline点云、20日事件窗与股票spread的45事件；数据不满足者剔除，不按结果补选"
+outcome_primary = "quintile_reversal.csv 的连续 spread=Q5-Q1（股票层面，负值=前期强势组更惨）"
+outcome_secondary = "同口径行业层面的G减B累计收益差；以及既有‘抱团瓦解/弱势杀/均匀’二元/三元标签"
+round_unit = "按 crisis_rounds_final.py 的11轮归属聚类；2026轮不参与"
+random_groups = 200
+random_seed = 20261121
+
+[方法1_组内持久性]
+construction = "对G子点云的距离矩阵做VR H0；TP0=有限H0条长度和（等价于MST边权和）"
+primary = "m1_z_dtp0_20：ΔTP0(G, t0+20减baseline) 相对200个同规模随机组分布的稳健z分数"
+robust_z = "(x - median_random) / (1.4826*MAD_random)；MAD=0时改用IQR/1.349"
+secondary = ["TP0绝对变化", "MST边长>0.4/0.6/0.8的组件数", "H1 total persistence（只报，不作主判据）"]
+expected_sign = "若为分化型瓦解，G内部散开，ΔTP0上升；与signed spread预期负相关。共跌型不要求上升。"
+null = "相对随机组无稳定方向，或关联在留一轮后翻向"
+
+[方法2_嵌入存活]
+construction = "在全市场点云X上做H0图过滤；对每个阈值eps，计算G诱导子图组件数cG(eps)与G在全图中的像组件数img(eps)"
+image_rank = "img(eps)=G的顶点在全图并查集中所属的不同组件数；cG(eps)=仅保留G-G边时G的组件数"
+m2_area = "在eps∈[0,0.8]的101点均匀网格上，mean(img(eps)/cG(eps))"
+primary = "m2_delta_area_20 = m2_area(t0+20)-m2_area(baseline)；数值下降=强势组通过外部行业更早混合，独立性下降"
+secondary = ["external_merge_scale=min_{i in G,j not in G} d_ij", "eps=0.4/0.6/0.8的瞬时比值", "H1像存活（若节点与实现允许，仅探索）"]
+expected_sign = "若瓦解表现为失去独立性，m2_delta_area_20下降；与signed spread预期正相关。"
+null = "不优于随机组或不优于简单组间相关/收益差"
+
+[方法3_固定尺度连通寿命]
+construction = "对G在baseline的30日相关距离，取使G成为单一连通分量的MST最大内边权为epsG；在[t0-60,t0+20]逐日以同一epsG构图"
+lineage = "从t0-1的最大G组件出发，逐日选取与上一日目标顶点重叠最多的G组件；若最大重叠占比<0.5或原组件分裂且无继承者>0.5，记死亡"
+primary = "m3_survival_days：从baseline到首次死亡/观察末的连续存活交易日数；另报相对baseline的存活比例"
+secondary = ["死亡日相对t0的偏移", "存活期内组件规模占比", "与随机组同法寿命的差值"]
+expected_sign = "若原强势组结构死亡更早，m3_survival_days缩短；与signed spread预期正相关。"
+null = "随机组同样短，或寿命与spread无关"
+approximation = "这是固定尺度H0连通寿命，不是完整zigzag条形码；不得在论文写成‘zigzag persistence证明’"
+
+[方法4_彩色Mapper]
+construction = "全市场30日收益点云；lens=前两个主成分；5x5覆盖、每轴40%重叠；每个cube内用DBSCAN(eps=1.5*中位5NN距离,min_samples=2)聚类；共享点为边"
+color = "G行业标红，其余标灰；颜色只用于统计，不做看图判断"
+primary = "m4_delta_frag_20：G所覆盖Mapper节点诱导子图的连通分量数(t0+20减baseline)"
+secondary = ["G节点平均最短路到全图中心的归一化距离", "G颜色纯度（节点内G占比的加权均值）", "G覆盖节点数/|G|"]
+expected_sign = "若G分支碎裂，碎裂度上升；与signed spread预期负相关。"
+null = "碎裂度由G规模/节点数机械决定，或相对随机组无增量"
+
+[对照]
+random = "每个事件200个同规模随机行业组（从同日可计算universe无放回抽样）；主指标用随机分布稳健z"
+bottom = "同规模后20%组B，仅作方向对照，不替代随机组"
+time_placebo = "每个事件在同一年份抽取一个非危机交易日（距任何事件窗至少40个交易日）作时间安慰剂；只作描述"
+simple_baselines = ["G-B收益差", "G内平均相关", "G-B平均相关差", "全市场截面离散度", "第一主成分解释率", "b_n_nodes"]
+confound_controls = ["pre_q5", "事件年份", "baseline 20日波动率", "b_n_nodes"]
+
+[统计]
+primary_tests = 4
+association = "每个主指标与连续signed spread的Spearman rho；同时报95%事件块bootstrap区间"
+clustering = "按11轮做block bootstrap；同一轮内多个事件不得当独立样本"
+multiple_testing = "四个主指标为一个BH族，q<0.10才可称‘候选’；p值与q值都报"
+leave_one_round_out = "逐轮剔除后重算rho；至少75%的留一估计保持预登记方向，且无单轮贡献超过总效应的一半"
+increment_gate = "在控制pre_q5与年份后，主指标偏相关仍保持预登记方向且p<0.10；否则只能报描述性关联"
+positive_gate = "同时满足：BH q<0.10、留一轮方向稳定、随机组稳健z同向、控制后偏相关同向"
+negative_gate = "任一主指标不满足上述四条，即记否定，不得换窗口/换尺度/换随机种子追正"
+report_all = "四法全部主指标、全部次要指标、样本剔除、随机种子、运行哈希都须报告；不得只报通过者"
+
+[预期结果分层]
+strong = "至少一个方法过positive_gate，且能解释12/45分型不一致中的至少一个案例；可作候选诊断层，不改产品"
+medium = "只有描述性关联或仅案例可见；写入机制讨论与局限，不进产品"
+negative = "四法均不过；记录‘条件化+动态+Mapper仍无增量’，加强第21节否定边界"
+
+[禁止]
+b1 = "不改写v0.05—v0.24任何冻结产物、标签、掩码、事件表、分型与论文结论"
+b2 = "不读取2025-04-08之后数据，不把2026段用于调参或选择"
+b3 = "不因为某方法失败而改随机种子、组规模、eps、Mapper覆盖参数或spread阈值"
+b4 = "不把行业指数结果冒充个股抱团；没有持仓数据时只能称‘前期强势组/类抱团组’"
+b5 = "方法3不得冒充完整zigzag；方法4不得用图片代替预登记数字"

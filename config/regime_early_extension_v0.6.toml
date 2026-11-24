@@ -1,0 +1,120 @@
+# =====================================================================
+# v0.6 升版预登记 —— 早期两条点云曲线的描述性补算
+# 登记时间：2026-11-11，任何 v0.6 早期持续同调结果计算之前
+# 用户裁决：能否把这些早期曲线真正补出来？另升版预登记并另存产物
+# =====================================================================
+
+[meta]
+version = "0.6"
+registered_at = "2026-11-11T20:58:00+08:00"
+status = "PRE-REGISTERED_BEFORE_ANY_V06_TDA_RESULT"
+kind = "within-sample descriptive early-history extension; no re-judgement"
+parent = "config/regime_split_check_v0.5.toml"
+trigger = "第五版只向前补行情与急性标签；输入资格审计证明早期十六行业状态点云和较少节点行业相关点云具备原始数据条件，用户明确要求真正补算并另存"
+freeze_guard = "v0.1—v0.5、all14/all17/all19、config/study.toml 及全部旧报告一字不改；所有新产物使用 v06 / v0.6 标识"
+no_result_driven_selection = "补算整段历史日历，不按危机曲线形态选择日期、节点、窗口、算法或阈值；否定和异常结果全部保留"
+
+[scope]
+front_calendar_start = "1999-12-30"
+front_calendar_end = "2012-12-28"
+early_statistical_event_ids = "101—128（报告统一展示 01—28）"
+a16_compute_start = "1999-12-30"
+a16_compute_end = "2005-03-31"
+a16_overlap_start = "2005-01-04"
+a16_overlap_end = "2005-03-31"
+b_compute_end = "2013-03-29"
+b_overlap_start = "2012-12-31"
+b_overlap_end = "2013-03-29"
+a27_action = "不补算、不回填；新增十一行业在当前清洗库中均自 2014-02-21 起，完整二十七行业早期不能原样构造"
+purpose = "补齐二十八个早期事件前后二十交易日的十六行业状态点云与行业相关点云曲线，并给出整段早期日级摘要；只读描述，不更新主判据"
+post_2013_action = "第六版早期计算不读取 2013-03-29 之后的行业行情；报告后段若需对照只读既有冻结摘要，不读取或评分 2025 最终测试集"
+
+[a16_state_cloud]
+source_db = "../a_share_pit/tdx_central.db"
+source_table = "sw_industry_daily"
+source_field = "close > 0"
+codes = ["801010", "801030", "801040", "801050", "801080", "801110", "801120", "801130", "801140", "801150", "801160", "801170", "801180", "801200", "801210", "801230"]
+alignment = "只保留十六行业同日全部有正收盘价的日期；loader 与冻结 phti_pipeline.load_industry_panel 相同"
+return_definition = "相邻对齐交易日收盘价的日对数收益"
+point = "一个交易日"
+window = "截至 t 的最近十个日对数收益，形成十个点"
+coordinates = "固定十六个申万一级行业的当日对数收益"
+distance = "十六维欧氏距离，保留量级"
+complex = "Vietoris—Rips，maxdim=1，coeff=2"
+diagrams = "H0 去除无穷死亡类；H1 取有限区间；由同一 ripser 调用同时生成形状摘要与相邻日距离"
+shape_columns = "完全复用 build_daily_ph_summaries.SHAPE_COLS 与 shape_of_window；delta=0.01"
+adjacent_distance = "相邻两个已计算窗口的 H0、H1 持续图分别计算二阶威尔斯特拉斯距离（工程原名 Wasserstein），内范数 L_inf，完全增广对角线＋线性指派，两个维度求和；首个窗口该值为空"
+no_smoothing = "不附加六十日平滑，不生成仓位或交易信号"
+known_limit = "十个点少于十六个坐标轴，H1 受点数—维数约束；披露但不据此删改结果"
+
+[b_industry_correlation_cloud]
+calendar_source = "outputs/xy_replication_data.db :: benchmark_daily, code=801003，1999-12-30 起"
+price_source = "outputs/xy_sw2014_corrected_data.db :: sw2014_daily"
+universe = "fetch_sw2014_corrected.CODES 的固定 104 个申万 2014 版二级行业代码"
+classification_semantics = "事后固定分类的样本内历史描述，不冒充各早期交易日当时实时可知名单"
+base_eligibility = "候选日位置 i>=30；最近 31 期收盘价全部存在且为正，最近 30 个简单收益样本标准差非零"
+node_count_control = "最终节点为基础合格名单在 10/15/20/30 四窗口上的交集；与冻结 build_window_grid_summaries.build_eligible 相同；最终少于四个节点则该日记未覆盖"
+coordinates = "每个合格行业最近十期简单收益（需十一期正收盘价）"
+distance = "d=sqrt(max(0,2(1-rho)))，相关矩阵对称化、截断至[-1,1]、对角线置一"
+h1_h2 = "完全复用 build_window_grid_summaries.xy_features；VR maxdim=2，thresh=2.0，coeff=2；输出 n_nodes/H1/H2/持续景观/控制变量"
+h0 = "完全复用 build_v03_summaries.h0_features；Prim 最小生成树边权等于 VR H0 有限死亡值，并输出合并层级与连通分量摘要"
+landscape = "沿用当前 exact_landscape_l1 定义，不改代码、不改单位"
+node_disclosure = "逐日保存基础节点数、最终节点数、剔除节点数及最终代码名单；不把节点数变化解释成纯拓扑效应"
+missing = "无合格价格、节点不足或尚未预热均记空，不补零、不回填、不用未来行情"
+
+[merge_for_descriptive_display]
+output = "outputs/regime_v06_early_descriptive_daily.csv"
+rows = "仅第五版前段 3144 个标签日（1999-12-30..2012-12-28），标签与状态列逐字复制，不重算"
+a16_rule = "2005-01-04 前使用 v0.6 新算；2005-01-04 起沿用冻结 regime_v03_phti_p16_w10.csv。二者是同一十六行业面板、同一算法的计算批次衔接，不是跨面板拼接"
+b_rule = "2012-12-28 前使用 v0.6 新算；不写入 2012-12-31 后冻结段。行业相关点云与状态点云永不互相替代"
+a27_rule = "全部留空，line_a27_present=0；禁止把 a16 数值写入 a27 字段"
+schema = "沿用第五版宽表 67 列及 a16_/a27_/b_ 分线前缀，仅改文件名为 v06 描述性产物"
+judgement_boundary = "该文件不得送入 verify_v03_split.py 或任何十四条推测判定；第五版 split_wide/grid/verdicts 永不覆盖"
+
+[acceptance]
+input_assertions = [
+  "十六行业原始表与清洗表在 2001—2004 均有 961 个共同正收盘交易日；本次实际使用原始表，与冻结 loader 一致",
+  "二级行业日历首日 1999-12-30；候选日节点资格按冻结规则独立逐日计算",
+  "只读数据库；所有输入、代码与配置记录 SHA256",
+]
+a16_overlap = "2005-01-04..2005-03-31 全部共同日期、全部摘要列与冻结 v0.3 逐值比较；计数列完全相等，数值列最大绝对差 < 1e-8；覆盖日期集合一致"
+b_overlap = "2012-12-31..2013-03-29 全部共同日期与冻结 regime_win_summaries_xy_10.csv、regime_v03_xy_h0_w10.csv 比较；最终节点代码名单亦与 regime_win_xy_eligible.json 相同；计数列完全相等，数值列最大绝对差 < 1e-8"
+h0_crosscheck = "固定均匀抽取二十四个早期合格日期，Prim 正边权与 ripser H0 正死亡值比较，数量一致且最大绝对差 < 1e-6（跨 float64/float32 实现容差）"
+determinism = "A16 独立全量双跑，CSV 字节级一致；B 线固定均匀二十四日独立重算全部 XY/H0 字段，计数完全相等、数值最大绝对差 < 1e-8；报告与合并表双跑字节一致"
+coverage = "二十八个早期事件逐事件、逐线报告整窗组覆盖天数；目标为十六行业与行业相关点云在资格满足日全部有实测摘要，任何剩余空白按预热、节点不足、结构性无定义、待核空值分类"
+no_nan_inf = "输出CSV不得出现 NaN/Inf 字面量；无定义写空字符串"
+failure_policy = "重叠等价性或确定性不达标则停止，不生成正式第六版报告，不通过改容差或换样本强行通过"
+
+[outputs]
+a16 = "outputs/regime_v06_early_phti_p16_w10.csv"
+b_xy = "outputs/regime_v06_early_xy_10.csv"
+b_h0 = "outputs/regime_v06_early_xy_h0_w10.csv"
+eligible = "outputs/regime_v06_early_xy_eligible.json"
+eligibility_audit = "outputs/regime_v06_early_xy_eligibility.csv"
+daily = "outputs/regime_v06_early_descriptive_daily.csv"
+event_windows = "outputs/crisis_context_v06_early_event_windows.csv"
+event_overview = "outputs/crisis_context_v06_early_event_overview.csv"
+report = "outputs/crisis_context_v06_early_report.html"
+manifest = "outputs/regime_v06_early_manifest.json"
+scripts = "src/regime_check/build_v06_early_summaries.py; src/regime_check/export_crisis_context_v06_early.py; src/regime_check/build_crisis_context_report_v06_early.py"
+
+[boundary]
+gate1 = "暂停，须先与用户讨论设计"
+final_2025_test = "封存，不读取、不评分；本版早期计算止于 2013-03-29"
+gate2 = "未启动"
+phti_performance = "未运行"
+no_scoring = "无绩效、IC、夏普、PR-AUC、命中率、提前量、召回率、误报、仓位或阈值反选"
+no_statistics = "不跑 bootstrap、显著性检验或十四条推测重判；第五版 5 支持/2 矛盾/7 无法判定仅作为冻结历史结果保留"
+no_extrapolation = "第六版只增加早期样本内描述性曲线，不得外推为 TDA 对 A 股危机预警有效或无效"
+
+# =====================================================================
+# 追加修订：A16 新旧计算起点的预热空值，不回改上方任何预登记原文
+# 首次计算在重叠验收阶段停止；未生成正式第六版报告、未重判任何推测。
+# =====================================================================
+[amendment_2026_11_11_a16_boundary_warmup]
+registered_at = "2026-11-11T21:13:00+08:00"
+observed_mechanical_difference = "旧A16管线从2005-01-04起加载，故2005-01-04..2005-01-14共9个形状预热日所有形状列为空，2005-01-17为第10个距离预热日W_t为空；新管线从1999年起连续加载，在这些日期已有足够历史窗口，因此产生实测值。2005-01-18起旧W_t开始有效。"
+ruling = "A16重叠验收按各列族旧首个有效日比较：形状列从旧首个形状日2005-01-17起逐值比较，W_t从旧首个有效距离日2005-01-18起逐值比较；旧预热期内必须全空，新多出的早期历史值仅登记为计算起点差异，不视为算法不一致。"
+unchanged_strictness = "首个有效日起所有字段仍按原容差与空值mask严格比较，包括零个一维环造成的结构性空值；日期集合仍须一致，不放大容差、不删除任何首个有效日后的差异。"
+merge_rule_unchanged = "描述性合并仍在2005-01-04起沿用旧冻结文件，旧预热空值不被新值替换；新增早期段止于2005-01-03。"
+audit_trail = "首次失败与未通过原因保留在控制台与本修订；不得写成首次运行即全部通过。"

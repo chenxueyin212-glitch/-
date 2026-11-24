@@ -1,0 +1,74 @@
+# v0.8 危机事件拓扑画像分型 —— 预登记
+# 创建时间：2026-11-12（在任何 v0.8 分组结果计算前）
+# 性质：纯描述性对账，不是预测、不是绩效、不改任何冻结判定
+
+[meta]
+purpose = "按拓扑摘要画像给危机事件分组，检验拓扑共性与金融定性共性是否对应"
+registered_before_results = true
+spec_version = "v0.8-event-typology"
+base_data = "outputs/crisis_context_v07_event_phase_metrics.csv + crisis_context_v07_event_overview.csv"
+boundary = "样本内描述性对账；不重判 14 推测；不改 v0.1—v0.7 任何产物；不做绩效/IC/命中率/提前量；不读 2025 测试集"
+
+[event_scope]
+include = "全部 45 个统计事件（前段 28 + 后段 17）；2 个外部锚点单列不入分组"
+exclude_from_clustering = "in_judgement=0 且 event_source=外部金融定性危机"
+note = "事件 3 和 16（用户指定排除）仍保留描述，不因排除而删除"
+
+[topological_features]
+# 拓扑画像 = (crisis 阶段均值 − pre20 阶段均值)，取 event_phase_metrics 中的 __mean 列
+# 分线使用，不合并 A/B 同名量
+A_line = [
+  "a16_W_t__mean",              # 相邻持续图距离（尺度）
+  "a16_h0_death_mean__mean",    # 零维死亡均值（尺度）
+  "a16_h1_count__mean",         # 一维环数量（形状）
+  "a16_window_rms__mean",       # 窗口均方根（波动）
+  "a16_avg_pair_corr__mean",    # 平均相关
+  "a16_leading_eig_share__mean" # 第一特征值占比
+]
+B_line = [
+  "b_h2_count__mean",                    # 二维空腔数量
+  "b_h1_count__mean",                    # 一维环数量
+  "b_h2_landscape_l1__mean",             # 二维景观一阶范数
+  "b_industry_average_correlation__mean", # 行业平均相关
+  "b_xy_h0_death_mean__mean"             # 零维死亡均值
+]
+# 对每个特征计算 delta = crisis_mean − pre20_mean
+# 标准化：全事件集上 z-score，使不同量纲可比
+
+[financial_features]
+# 金融画像：取 event_overview 已有字段，不做任何新计算
+severity = "crisis_max_dd_pct"        # 危机段最大回撤
+speed = "n_crisis_days"               # 危机段持续交易日
+total_decline = "crisis_cum_pct"      # 危机段累计收益
+recovery = "post20_cum_pct"           # 事后 20 日累计收益
+correlation = "onset_avg_pair_corr"   # 起点平均相关
+era = "segment (前段/后段)"
+
+[grouping_method]
+algorithm = "层次聚类（Ward 法），欧氏距离"
+k_selection = "轮廓系数最大，k 范围 2—8"
+robustness = "报告 k=3,4,5 的分组结果，不因结果好看而只报一个 k"
+cluster_naming = "按组内拓扑 delta 中位数命名，如「尺度扩张型」「形状塌缩型」"
+
+[cross_tab]
+direction_1 = "拓扑分组 → 金融定性分布（每组的严重度/速度/恢复/年代构成）"
+direction_2 = "金融分型 → 拓扑画像（按严重度分档后各档的拓扑 delta 中位数）"
+round_mapping = "每组的七轮归属（事件落在哪一轮的区间内）"
+
+[outputs]
+prefix = "regime_v08_typology_"
+tables = [
+  "event_profiles.csv",      # 每事件的拓扑 delta + 金融画像
+  "cluster_assignments.csv", # 各 k 下的分组结果
+  "cluster_financial.csv",   # 每组的金融画像汇总
+  "financial_topology.csv",  # 按金融分档的拓扑画像汇总
+  "cross_tab.csv"            # 交叉表
+]
+report = "outputs/crisis_typology_v08_report.html"
+
+[forbidden]
+- 不做显著性检验、不做 bootstrap、不做预测
+- 不把分组结果说成"识别出了危机类型"
+- 不用分组结果反推或修改任何冻结判定
+- 不覆盖任何旧产物
+- 结论仅限：在本样本内，拓扑画像与金融定性的对应关系如何

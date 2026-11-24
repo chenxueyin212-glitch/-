@@ -1,0 +1,154 @@
+# PHTI A股复现线 · 预登记 v0.1（2026-11-08）
+# 状态：仅完成工程验收；**尚未计算任何绩效/IC/回归/回测结果**。
+# 本文件与 config/study.toml（Gate 0 v1.0 冻结）完全独立，不修改、不覆盖其任何字段。
+# 目标：把 Baitinger & Flegel (2021) 的方法链移植到 A 股行业面板；不是精确复现。
+# 任何修改必须升版并保留本版输出；禁止根据绩效结果反选参数、窗口或口径。
+
+[protocol]
+version = "phti-v0.1-2026-11-08"
+status = "preregistered_before_any_performance"
+scope = "exploratory methodological replication; not a confirmatory result"
+paper = "E:/s11408-020-00377-x.pdf"
+paper_title = "The better turbulence index? Forecasting adverse financial markets regimes with persistent homology"
+paper_doi = "10.1007/s11408-020-00377-x"
+original_out_of_sample = "1991-06..2019-12, 343 monthly S&P500 returns"
+# 与 Gate 0/1 的关系：新支线，不读取其 OOF 评分，不读取其 2025 最终测试
+gate_status = "Gate 1 paused; 2025 final test unread; Gate 2 not started"
+
+[data]
+db = "../a_share_pit/tdx_central.db"
+industry_table = "sw_industry_daily"
+index_table = "index_daily_raw"
+calendar_table = "trade_calendar"
+start = "2005-01-04"
+end = "2024-12-31"            # 开发期终点；2025 起封存
+test_start = "2025-01-01"
+# 分类断点沿用 Gate 0 冻结口径，面板坐标不得跨断点静默拼接
+exclude_backfill = true
+classification_breaks = ["2014-02-21", "2021-12-13"]
+
+[panels.p16]
+role = "primary_analysis"
+start = "2005-01-04"
+n_industries = 16
+codes = ["801010", "801030", "801040", "801050", "801080", "801110",
+         "801120", "801130", "801140", "801150", "801160", "801170",
+         "801180", "801200", "801210", "801230"]
+analogue_of = "K.R. French 10 industry portfolios (concept only; count differs)"
+
+[panels.p27]
+role = "robustness_short_sample"
+start = "2014-02-21"
+n_industries = 27
+codes = ["801010", "801030", "801040", "801050", "801080", "801110",
+         "801120", "801130", "801140", "801150", "801160", "801170",
+         "801180", "801200", "801210", "801230", "801710", "801720",
+         "801730", "801740", "801750", "801760", "801770", "801780",
+         "801790", "801880", "801890"]
+analogue_of = "K.R. French 30 industry portfolios (concept only; count differs)"
+
+[returns]
+# 拓扑输入用日对数收益（与 Gate 0 冻结口径一致）；组合收益用简单收益
+pointcloud_input = "daily_log_return"
+portfolio_return = "simple_return"
+# 原文使用百分数简单收益且未做尺度归一；此对照专门检验 W 是否只是波动放大
+original_scale_control = "daily_pct_simple_return"
+scale_normalized_control = "per_axis_zscore_within_60d_window"
+price_field = "close"
+index_price_field = "close"
+
+[pointcloud]
+# 一个点 = 一个交易日；坐标 = 该日 K 个行业收益；窗口 60 个交易日
+definition = "one_point_per_trading_day"
+window_days = 60
+metric = "euclidean"
+complex = "Vietoris-Rips"
+maxdim = 1                     # H0 + H1，照原文脚注 20
+coeff = 2
+# 消融（原文未做）：分别只保留 H0 / 只保留 H1
+ablation = ["H0_only", "H1_only", "H0_H1"]
+
+[distance]
+name = "p-Wasserstein between adjacent-day persistence diagrams"
+lag_h = 1                      # 比较 P_t 与 P_{t-1}
+# 原文公式 (8) 内范数为 L_inf；p 未指定 —— 主口径冻结 p=1
+order_p = 1
+internal_norm = "L_inf"
+order_p_sensitivity = [2]
+internal_norm_sensitivity = ["L2"]
+p_infinity_control = "bottleneck"
+# 原文说「算到第一维」但没说 H0/H1 如何合并，这是第五个复现歧义：
+# 主口径按维度分别算 W 再相加（标准做法）；敏感性用拼接成一个图（对应正文「三列矩阵」的描述）
+combine_dimensions = "sum_wasserstein_per_dimension"
+combine_dimensions_sensitivity = "concatenate_H0_H1_into_one_diagram"
+# 实现：点数不等时增广对角线，点->对角线代价 = 半持久 (d-b)/2（L_inf 情形）
+diagonal_augmentation = true
+diagonal_cost = "half_persistence_linf"
+assignment = "scipy.optimize.linear_sum_assignment"
+# H0 的 essential class（death=inf）剔除；另做替换上界的敏感性
+essential_class = "drop_finite_only"
+essential_class_sensitivity = "replace_inf_with_2x_filtration_max"
+
+[signal]
+# (60,60,60)：60 日窗口 -> 每日 W -> 60 日 SMA -> 只留月末 -> 60 个月末经验分位
+sma_days = 60
+history_month_ends = 60
+quintile_method = "causal_midrank_inclusive_current_month"
+quintile_window_sensitivity = "trailing_60_plus_current"
+month_end_definition = "last trading day of month with full industry data"
+# 因果：月末 t 的信号只作用于 t+1 月收益
+applies_to = "next_month_return"
+no_lookahead_assertion = true
+
+[portfolio]
+# 表 2 原文仓位（%）；FEL 因本地无融资利率，仅作展示与 0 利率敏感性，不作主结论
+worst_case_protection = [100, 100, 100, 100, 0]
+flexible_exposure = [100, 80, 60, 40, 20]
+flexible_levered = [120, 110, 90, 60, 20]
+flexible_levered_status = "display_and_zero_rate_sensitivity_only"
+primary_equity = "000300"       # 沪深300 价格指数
+primary_equity_market = 1
+equity_robustness = ["881001.WI", "gate0_composite_000001_399001"]
+cash_return = 0.0               # 本地无 T-Bill / 货币基金序列；主口径设 0
+cash_return_sensitivity_annual = 0.02
+cost_per_side = 0.001
+cost_sensitivity = [0.0, 0.003]
+fully_invested = true
+
+[benchmarks]
+buy_and_hold = true
+oti_mahalanobis = true          # 非 TDA 基准，同面板、同 (60,60,60)
+oti_window_days = 60
+# 本地无期权隐含波动率；用已实现波动率替代，且必须标明语义不同
+vix_proxy = "realized_vol_20d_trailing_NOT_VIX"
+vix_proxy_caveat = "backward-looking; not a forward-looking implied-vol benchmark"
+
+[evaluation]
+# 原文六类指标 + 本项目补充的信号层/事件层指标，全部预先登记
+original_metrics = ["annualized_mean", "annualized_vol", "sharpe",
+                    "max_drawdown", "min_monthly_return", "skewness",
+                    "CER_gamma3", "CER_gamma9"]
+additional_metrics = ["time_series_ic_return", "time_series_ic_volatility",
+                      "return_regression_eq5", "volatility_regression_eq6",
+                      "block_bootstrap_ci", "event_trigger_count",
+                      "false_alarms_per_year", "event_level_recall",
+                      "median_lead_days", "turnover", "net_of_cost"]
+baselines = ["buy_and_hold", "OTI16", "OTI27", "realized_vol_proxy"]
+trading_days_per_year = 244
+stability_grid_window = [20, 30, 40, 50, 60]
+stability_grid_sma = [20, 30, 40, 50, 60]
+stability_multiple_testing = "joint_max_statistic + Bonferroni; no post-hoc selection"
+report_all_cells = true
+
+[time_boundary]
+# 与 Gate 0 一致：2025 起封存，不用测试集训练/校准/调参/反选
+development_end = "2024-12-31"
+test_start = "2025-01-01"
+test_status = "sealed_unread"
+test_read_policy = "single unified read only after design frozen and discussed with user"
+
+[phase_status]
+close_reading_report = "outputs/phti_close_reading.html"
+engineering_acceptance = "outputs/phti_engineering_acceptance.json"
+performance_evaluation = "NOT_RUN"
+performance_reason = "awaiting user confirmation on panel / equity+cash / sealed-test boundary"

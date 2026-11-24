@@ -1,0 +1,61 @@
+% 自动生成：逐事件归因（24 行 = 4 层 x 6 事件）
+\subsection*{三项条件取二的触发规则 S3（选定）}
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{0.85cm}>{\raggedright\arraybackslash}p{0.95cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{1.15cm}>{\raggedright\arraybackslash}p{1.1cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{起点} & \textbf{结束} & \textbf{首次告警日} & \textbf{原始偏移} & \textbf{窗口值} & \textbf{分档} & \textbf{判型} & \textbf{预案} & \textbf{系统状态} & \textbf{说明} \\
+\midrule
+N1 & 2026-03-18 & 2026-03-23 & 2026-03-19 & 1 & 1 & 窗内 &  &  &  & 窗内第 1 日 \\
+N2 & 2026-07-09 & 2026-07-31 & 2026-06-05 & -23 & -20 & 提前 &  &  &  & 提前 20 日 \\
+N3 & 2026-10-20 & 2026-11-03 & 2026-09-11 & -20 & -20 & 提前 &  &  &  & 提前 20 日 \\
+L1 & 2026-02-25 & 2026-03-02 & 2026-03-19 & 16 & 16 & 结束后 &  &  &  & 窗后 16 日 \\
+L2 & 2026-06-18 & 2026-07-10 & 2026-06-01 & -13 & -13 & 提前 &  &  &  & 提前 13 日 \\
+L3 & 2026-09-09 & 2026-09-28 & 2026-08-24 & -12 & -12 & 提前 &  &  &  & 提前 12 日 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\subsection*{五日撤销、十日冷却的告警管理 B10（选定）}
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{0.85cm}>{\raggedright\arraybackslash}p{0.95cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{1.15cm}>{\raggedright\arraybackslash}p{1.1cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{起点} & \textbf{结束} & \textbf{首次告警日} & \textbf{原始偏移} & \textbf{窗口值} & \textbf{分档} & \textbf{判型} & \textbf{预案} & \textbf{系统状态} & \textbf{说明} \\
+\midrule
+N1 & 2026-03-18 & 2026-03-23 & 2026-03-19 & 1 & 1 & 窗内 & 深慢 & 深慢 & 已评估 & 窗内第 1 日 \\
+N2 & 2026-07-09 & 2026-07-31 & 2026-06-01 & -27 & -20 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 20 日 \\
+N3 & 2026-10-20 & 2026-11-03 & 2026-09-11 & -20 & -20 & 提前 &  &  & 随访不足 & 数据截止，无法随访 \\
+L1 & 2026-02-25 & 2026-03-02 & 2026-03-19 & 16 & 16 & 结束后 & 深慢 & 深慢 & 已评估 & 窗后 16 日 \\
+L2 & 2026-06-18 & 2026-07-10 & 2026-06-01 & -13 & -13 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 13 日 \\
+L3 & 2026-09-09 & 2026-09-28 & 2026-07-07 & -46 & -20 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 20 日 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\subsection*{替代触发规则 REF8（对照）}
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{0.85cm}>{\raggedright\arraybackslash}p{0.95cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{1.15cm}>{\raggedright\arraybackslash}p{1.1cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{起点} & \textbf{结束} & \textbf{首次告警日} & \textbf{原始偏移} & \textbf{窗口值} & \textbf{分档} & \textbf{判型} & \textbf{预案} & \textbf{系统状态} & \textbf{说明} \\
+\midrule
+N1 & 2026-03-18 & 2026-03-23 & 2026-02-13 & -17 & -17 & 提前 &  &  &  & 提前 17 日 \\
+N2 & 2026-07-09 & 2026-07-31 & 2026-06-05 & -23 & -20 & 提前 &  &  &  & 提前 20 日 \\
+N3 & 2026-10-20 & 2026-11-03 & 2026-09-11 & -20 & -20 & 提前 &  &  &  & 提前 20 日 \\
+L1 & 2026-02-25 & 2026-03-02 & 2026-01-26 & -16 & -16 & 提前 &  &  &  & 提前 16 日 \\
+L2 & 2026-06-18 & 2026-07-10 & 2026-05-21 & -20 & -20 & 提前 &  &  &  & 提前 20 日 \\
+L3 & 2026-09-09 & 2026-09-28 & 2026-07-10 & -43 & -20 & 提前 &  &  &  & 提前 20 日 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\subsection*{不做告警状态管理 G0（对照）}
+\begin{center}\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{1.0cm}>{\raggedright\arraybackslash}p{0.85cm}>{\raggedright\arraybackslash}p{0.95cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{1.15cm}>{\raggedright\arraybackslash}p{1.1cm}Y@{}}
+\toprule
+\textbf{编号} & \textbf{起点} & \textbf{结束} & \textbf{首次告警日} & \textbf{原始偏移} & \textbf{窗口值} & \textbf{分档} & \textbf{判型} & \textbf{预案} & \textbf{系统状态} & \textbf{说明} \\
+\midrule
+N1 & 2026-03-18 & 2026-03-23 & 2026-03-19 & 1 & 1 & 窗内 & 深慢 & 深慢 & 已评估 & 窗内第 1 日 \\
+N2 & 2026-07-09 & 2026-07-31 & 2026-06-05 & -23 & -20 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 20 日 \\
+N3 & 2026-10-20 & 2026-11-03 & 2026-09-11 & -20 & -20 & 提前 &  &  & 随访不足 & 数据截止，无法随访 \\
+L1 & 2026-02-25 & 2026-03-02 & 2026-03-19 & 16 & 16 & 结束后 & 深慢 & 深慢 & 已评估 & 窗后 16 日 \\
+L2 & 2026-06-18 & 2026-07-10 & 2026-06-01 & -13 & -13 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 13 日 \\
+L3 & 2026-09-09 & 2026-09-28 & 2026-08-24 & -12 & -12 & 提前 & 无法判定 & 未切换 & 已评估 & 提前 12 日 \\
+\bottomrule
+\end{tabularx}
+\end{center}

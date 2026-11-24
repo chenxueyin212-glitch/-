@@ -1,0 +1,100 @@
+# =====================================================================
+# 预登记：金融危机类型 × 拓扑响应的交互效应检验
+# 版本：v0.10
+# 登记时间：2026-11-12T23:30:53+08:00
+# 登记于任何计算之前
+# =====================================================================
+
+[meta]
+purpose = "将 v0.8 的『两类危机拓扑方向相反』从描述性观察升级为可检验结论。只做交互效应检验（两组是否不同），不做组内单侧检验（每组是否非零），避免循环论证。"
+registered_before_results = true
+base_version = "v0.8 typology + v0.9 daylevel"
+not_a_rejudge_of_v0_5 = true
+note = "v0.5 的 5/2/7 判定仍是冻结历史；本检验提供独立的交互证据，不是替代 v0.5 的正式判定引擎。"
+
+[problem]
+# 待检验假设（每条推测一个交互假设）
+# H₀: 金融危机类型与该拓扑变量的变化方向无关（两组同分布）
+# H₁: 两组的拓扑变化分布不同
+hypothesis_framework = "置换检验（两组标签打乱 10000 次，看观测组间差是否极端）"
+
+[circularity_control]
+# 核心设计：分型用金融特征，检验用拓扑特征——特征集完全不重叠
+# 这是打破循环论证的关键
+clustering_features = ["crisis_max_dd_pct", "n_crisis_days", "post20_cum_pct"]
+clustering_note = "只用金融特征（回撤深度、危机速度、事后恢复），不碰任何拓扑量"
+test_features = "拓扑 delta 特征（危机期 − 危机前的拓扑摘要均值变化）"
+algorithm = "Ward 聚类 k=2，与 v0.8 相同算法但不同输入"
+
+[events]
+source = "outputs/regime_v08_typology_event_profiles.csv"
+n_total = 45
+n_front = 28
+n_back = 17
+# 金融特征缺失的事件剔除并披露
+missing_policy = "金融特征缺失的事件不进入聚类和检验，逐个披露"
+
+[testable_conjectures]
+# 8 条有明确拓扑 delta 变量的推测进入交互检验
+# 6 条因规则/数据限制不进入（C02 规则盲区、C10/C11 时序/速率非 delta、C12 规则、C13 无数据、C14 规则）
+C01 = { variable = "delta_a16_window_rms__mean", description = "尺度摘要（均方根）变化量" }
+C03 = { variable = "delta_a16_avg_pair_corr__mean", description = "平均两两相关变化量" }
+C04 = { variable = "delta_a16_leading_eig_share__mean", description = "第一特征值占比变化量" }
+C05 = { variable = "delta_a16_h1_count__mean", description = "状态点云一维环数量变化量" }
+C06 = { variable = "delta_b_h2_count__mean", description = "相关网络二维空腔数量变化量" }
+C07 = { variable = "delta_b_h1_count__mean", description = "相关网络一维环数量变化量" }
+C08 = { variable = "delta_a16_W_t__mean", description = "持续图相邻日距离变化量" }
+C09 = { variable = "delta_b_xy_h0_death_mean__mean", description = "相关网络零维死亡均值变化量" }
+
+[excluded_conjectures]
+C02 = "规则盲区（单侧判定），与分型无关"
+C10 = "涉及时序（『先于危机』），非简单 delta"
+C11 = "涉及速率（变化率），且 v0.9 已证实滞后"
+C12 = "规则不设方向"
+C13 = "本地无停牌/涨跌停数据"
+C14 = "规则定为探索性"
+
+[statistical_test]
+permutation_count = 10000
+permutation_seed = 20261112
+test_statistic = "两组中位数差（group1 − group2）"
+null_distribution = "打乱组标签后的中位数差分布"
+p_value = "(|观测差| ≥ |置换差| 的次数 + 1) / (置换次数 + 1)"
+effect_size = "Cliff's delta（非参数效应量，范围 −1 到 +1）"
+ci_method = "按事件块自助（B=5000），95% 百分位置信区间"
+block_note = "按事件整体重抽样（不是按日），因为日级有自相关"
+
+[multiple_comparisons]
+n_tests = 8
+method = "Benjamini-Hochberg"
+target_fdr = 0.10
+note = "Bonferroni 阈值 0.0018 过严（n=45 功效不足），预登记改用 BH-FDR。同时报告 Bonferroni 结果供参照。"
+
+[power_boundary]
+# 先算功效再看结果
+n_group1_expected = "≈15"
+n_group2_expected = "≈30"
+effective_n_note = "事件级样本，无日级自相关问题，有效样本 = 名义样本"
+mde_cohen_d_at_0.8_power = "组1 n=15 需 d≈0.82；组2 n=30 需 d≈0.73（双侧 α=0.05）"
+interpretation = "如果功效不足导致不显著，应解读为『测不到』而非『不存在』"
+
+[outputs]
+prefix = "regime_v010_interaction_"
+files = [
+    "regime_v010_interaction_clustering.csv",
+    "regime_v010_interaction_test_results.csv",
+    "regime_v010_interaction_manifest.json",
+]
+
+[boundary]
+- "纯描述性对账的升级版：从描述性到可检验，但仍是样本内"
+- "不重判 v0.5 的 14 条正式判定（那是另一套预登记的判定引擎）"
+- "不做绩效、信息系数、夏普比率、精确率召回率曲线下面积、仓位、阈值反选"
+- "不读取 2025 最终测试集"
+- "不改 config/study.toml 或任何冻结产物"
+- "金融分型可能与 v0.8 拓扑分型不完全一致——这本身是信息，不是问题"
+- "结论不得外推为 TDA 对危机预警有效或无效"
+
+# ---------------------------------------------------------------------
+# 追加修订区（只追加，不回改上文）
+# ---------------------------------------------------------------------

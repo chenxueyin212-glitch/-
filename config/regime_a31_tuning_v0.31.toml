@@ -1,0 +1,108 @@
+# v0.31：a 腿换库（a16 → a31）后的完整判定机对账与参数调优
+# 预登记时间戳（写入即生效，早于任何判定机计算）
+registered_at = "2026-11-22T13:20:00+08:00"
+supersedes = ["v0.28（B 分位映射/A 段内标定，两条近似路径均否）", "v0.30（a31 特征重算，只做到票数层对账）"]
+basis = [
+  "用户指令（2026-11-22 13:15）：换库还是要换，a 腿也要换；数据补齐后，再找一个参数或调整参数，使受影响事件尽可能仍能判别出来。",
+  "数据前提已成立：v0.30 已用 Wind MCP 补齐 15 个申万一级行业 2000-01-04→2026-11-03 全历史（准入 15/15 PASS），并重算 a31 特征（对 p16 自检 max_abs_diff=0.0）。",
+]
+
+[scope]
+what = "在 a31 统一坐标下跑完整判定机（B10 告警 + 七票/十票确认 + 判型三票 + 连续2日 + 45事件矩阵 + 净账），并对判定参数做分层网格搜索。"
+not_what = [
+  "不修改 b 腿：b 腿仍用 regime_v07_split_wide.csv 的现口径列（v0.29 的 b 腿统一作为独立敏感性，不并入本次主臂）。",
+  "不修改 S3 触发口径、不改 B10 状态机、不改账本规则、不改判型三票构成。",
+  "不覆盖 v0.19/v0.21/v0.22 任何产物；本次输出统一写 regime_v031_* 前缀。",
+]
+
+[data]
+wide = "tda_project/outputs/regime_v07_split_wide.csv"
+a31 = "tda_project/outputs/regime_v030_phti_p31_w10.csv"
+bench = "tda_project/outputs/regime_v05_benchmark_daily.csv"
+events = "tda_project/outputs/regime_v012_trigger_event_timing.csv"
+
+[feature_mapping]
+# a 腿替换规则：a16_<name> → a31_<name>；b 腿列保持不变。
+a_prefix_old = "a16_"
+a_prefix_new = "a31_"
+b_prefix = "b_"
+
+[affected_events]
+# 756 交易日污染窗口内的事件（v0.19 口径下判定的 9 个）
+ids = [1, 2, 3, 4, 12, 13, 14, 15, 16]
+rationale = "2014-04-04 与 2022-01-25 两次 b 腿换库，756 日阈值污染窗分别至 2017-05-22、2025-03-25。"
+
+[grid]
+# 层 A（主网格）：坐标 × 特征项数 × 票数门槛 × 极端分位
+layer_a = [
+  { axis = "coord", values = ["a16", "a31"] },
+  { axis = "n_box", values = [7, 10] },
+  { axis = "min_votes", values = [4, 5, 6] },
+  { axis = "extreme_pct", values = [0.85, 0.80, 0.90] },
+]
+# 层 B（历史窗口）：仅在层 A 的冻结点 (a31, n_box 由层A选出, min_votes 由层A选出, 0.85) 上扫
+layer_b = { axis = "hist_window", values = [504, 756, 1000], fixed = { extreme_pct = 0.85 } }
+# 层 C（确认日数）：在层 B 选定点上扫
+layer_c = { axis = "confirm_days", values = [1, 2] }
+
+[selection_rule]
+# 事先固定的选择规则，按优先级串行应用；不做"看完结果再改规则"。
+primary = "affected9_recall：9 个受影响事件的识别数（提前 + 窗内 + 损伤窗，不含漏）"
+secondary = "all45_recall：45 个事件的识别总数"
+constraints = [
+  "all45_recall(a31) >= all45_recall(a16) 同档 —— 不得以牺牲总体识别换取 9 事件的局部改善",
+  "false_episodes(a31) <= 1.15 × false_episodes(a16) 同档 —— 误报段数上升不超过 15%",
+  "net_diff_p4_p3(a31) >= net_diff_p4_p3(a16) 同档 —— 净账不得转负向",
+]
+tie_break = "在满足约束的组合中，依次按 affected9_recall、all45_recall、-false_episodes、net_diff_p4_p3 排序取第一。"
+report_all = "必须输出完整网格表（含未入选组合），不得只报最优点。"
+
+[metrics]
+affected9_recall = "9 个受影响事件中 tier ∈ {提前, 窗内, 损伤窗} 的个数"
+all45_recall = "45 个事件中 tier ∈ {提前, 窗内, 损伤窗} 的个数"
+tier_counts = "提前 / 窗内 / 损伤窗 / 漏 四类计数"
+false_episodes = "不与任何事件 catch 窗重叠的 B10 告警段数"
+false_days_pct = "事件外告警日 / 全样本交易日"
+false_cost = "误报段 diff_p4_p3 合计"
+net_diff_p4_p3 = "45 事件 diff_p4_p3 合计（方案四 − 方案三）"
+judged_type_accuracy = "已切换事件中 judged_type == true_type 的个数"
+switch_count = "已切换事件数"
+first_confirm_delay = "已切换事件的首确认偏移均值"
+
+[stopping_rules]
+- "若 a31 在全部约束内无法达到 affected9_recall >= a16 同档，则结论记为『换库后可判别性未改善』，不改产品。"
+- "若最优组合的改善完全来自放宽门槛（extreme_pct < 0.85 或 min_votes 下调），则必须单列『放宽档』，不得与冻结档混报。"
+- "若 affected9_recall 的提升与 false_episodes 同步上升，记为『互换』而非『改善』。"
+- "任何参数组合都不得回写 v0.19—v0.22 的冻结结论。"
+
+[prohibitions]
+- "不得因 a31 结果更好看就回改 v0.29 的 b 腿选择。"
+- "不得把 2026 当样本外（已被 v0.25/v0.26/v0.30 反复读取）。"
+- "不得在未过本预登记的 selection_rule 时宣称某组参数『更优』。"
+- "不得用本版结果替换论文主结果（45/45、24/7/14、31/45、19/45、23.4%、+79.0）。"
+
+# ============ amendment_1（2026-11-22T13:19:00+08:00）============
+# 修订原因（发生在任何「切换/判型」维度结果产出之前）：
+# 首轮运行（13:17）证明 primary 指标在 v0.19 引擎中与全部待扫参数无关——
+# 事件覆盖 tier 由 B10 告警掩码决定，而告警只依赖 S3（5/20/756 日），
+# 与七票项数、票数门槛、极端分位、行业坐标、历史窗口、确认日数均无关。
+# 实测：36 个层A组合的 all45_recall 恒为 45、affected9_recall 恒为 9、false_episodes 恒为 83。
+# 因此原 primary 无区分度，不能用于选点。这是预登记指标选错，不是结果驱动的调整：
+# 修订时 9 个受影响事件各自的 switched / judged_type 分解尚未计算、尚未查看。
+[amendment_1]
+at = "2026-11-22T13:19:00+08:00"
+supersedes_primary = "affected9_recall"
+new_primary = "affected9_switched：9 个受影响事件中最终进入切换（switched=True）的个数"
+new_secondary = "affected9_type_correct：9 个受影响事件中判定类型 == 真实类型的个数"
+kept_metrics = [
+  "all45_switched：45 个事件中进入切换的个数（与 v0.19 switched_n 同口径）",
+  "all45_type_correct：45 个中判型正确个数（与 v0.19 first_type_correct_n 同口径）",
+  "net_reference：事件侧 e2e_p4_p3 合计 + 误报段损益合计（与 v0.19 net_reference 同口径）",
+  "false_cost：误报段损益合计",
+]
+revised_constraints = [
+  "net_reference(a31) >= net_reference(a16) 同档",
+  "false_cost(a31) >= false_cost(a16) 同档（误报代价不得更差）",
+  "all45_switched(a31) >= all45_switched(a16) 同档 − 1",
+]
+engine_fidelity_check = "a16/F7K4/p0.85/hw756/cd2 必须复现 v0.19：switched_n=19、first_type_correct_n=10、e2e_p4_p3_total=147.556072、e2e_p1_p3_total=180.365369、false_cost_total=-68.597328；否则脚本中止。"

@@ -1,0 +1,222 @@
+# =====================================================================
+# v0.5 升版预登记 —— 2012-12-31 之前危机缺口的基准前扩
+# 在看任何判定结果之前登记（2026-11-10 12:40 +08:00）
+# 本轮只执行 DATA LAYER（基准序列 + 扩展日历 + 验收）。
+# 判定层 / 状态掩码重算 / 14 条推测重批，须用户确认 pending_items 后再跑。
+# =====================================================================
+
+[meta]
+version = "0.5"
+registered_at = "2026-11-10T12:40:00+08:00"
+supersedes_nothing = true
+status = "PRE-REGISTERED; data layer executed; judgement layer NOT run"
+trigger = "用户 2026-11-10 指出工程未记录 2015 年前危机（七轮中的前三轮），并选择补法 B"
+user_verbatim = "B，万得全A数据能补就补，不能补就用上证和深成得等权合成，2012-12-31 之前的用合成指数，之后的依然用万得全A"
+freeze_guard = "v0.1/v0.2/v0.3/v0.4 以及 all14/all17/all19 全部产物一字不改；config/study.toml 不改"
+
+# ---------------------------------------------------------------------
+# 1. 基准口径（用户已确认的 Gate 0 合成口径 + v0.4 真 Wind 后段）
+# ---------------------------------------------------------------------
+[benchmark]
+anchor_date = "2012-12-31"
+anchor_close = 2223.24
+front_start = "1999-12-30"
+front_end = "2012-12-28"
+back_end = "2026-11-03"
+
+[benchmark.front_composite]
+source = "a_share_pit/tdx_central.db :: index_daily_raw"
+codes = ["000001", "399001"]
+definition = "r_sse(t)=close_000001(t)/close_000001(t-1)-1; r_szse(t)=close_399001(t)/close_399001(t-1)-1; r_eq(t)=(r_sse+r_szse)/2; 链式累乘，绝不直接平均点位"
+calendar = "两指数共同交易日（inner join）"
+discipline = "该口径与用户 2026-11-06 已确认的 Gate 0 市场基准口径完全一致，不是新口径"
+
+[benchmark.back_real_wind]
+source = "outputs/xy_wind_all_a_daily_v04_full.csv (真 881001.WI, 3359 行, 2012-12-31..2026-11-04)"
+labels_source = "outputs/regime_daily_labels_v04.csv 的 close_wind 列 (3339 行, 2012-12-31..2026-11-03)"
+discipline = "后段逐值沿用 v0.4，不重算、不平滑、不覆盖"
+
+[benchmark.splice]
+method = "以 2012-12-31=2223.24 为锚，用各段日收益反向递推前段点位，得到一条连续链式指数；标签只依赖收益率，绝对水平差一个常数倍不影响任何标签"
+boundary_rule = "收益按发生日归属：t<=2012-12-28 用合成日收益；t>=2012-12-31 用真 Wind 日收益；跨段那一日(2012-12-31)的收益归后段，用真 Wind"
+no_level_jump = true
+back_bitwise_identical = true
+
+# ---------------------------------------------------------------------
+# 2. 硬验收断言（数据层）
+# ---------------------------------------------------------------------
+[acceptance]
+back_rows = 3339
+front_rows = 3144
+total_label_days = 6483
+extra_anchor_row = 1
+assertions = [
+  "日期唯一且升序",
+  "基准点位全为正、无 NaN、无 inf",
+  "后段 3339 行 benchmark_close 与 v0.4 close_wind 逐值差 < 1e-9",
+  "后段 3339 行 benchmark_close 与真 Wind CSV close 逐值差 < 1e-9",
+  "2012-12-31 点位 = 2223.24",
+  "前段各日 benchmark_ret_pct 与 r_eq(t) 逐值一致（容差 1e-9）",
+  "无未来数据：所有日收益只使用 <= t 的收盘价",
+  "确定性：脚本连续运行两次产物 sha256 相同",
+]
+
+# ---------------------------------------------------------------------
+# 3. 两层标签（用户 2026-11-10 方法论框架，本轮先落第一层）
+# ---------------------------------------------------------------------
+[tier1_regime_rounds]
+definition = "第一层 = 7 个市场级危机制度区间，用于状态检测 / 危机期与非危机期拓扑对比 / 是否优于传统波动率与相关性"
+source = "用户提供的七轮区间，精确峰值日与谷值日由 TDX 上证 000001 盘中 high/low 在给定区间内定位（峰值之后的最低 low）"
+exact_dates = "outputs/regime_v05_rounds_exact.csv"
+semantics = "事后认定，只用于事后衡量严重程度与状态对比"
+forbidden = "禁止用于预警提前期、命中率、召回率、精确率、误报计算"
+
+[tier2_acute_events]
+definition = "第二层 = 急性危机事件，用于是否提前报警 / 提前多少交易日 / 年误报次数 / 哪类完全漏报"
+label_rule = "未来 20 交易日内相对 t 日最低累计简单收益 <= -10%"
+front = "1999-12-30..2012-12-28 按同一定义重算，产生新的前段急性事件段；与后段冻结 17 段分列，不合并统计"
+back = "后段冻结 17 段一字不改；v0.4 的危机掩码本就读入外部冻结 xy_crisis_events.csv，不按价格重算"
+warning = "长期慢熊(2001-2005、2009-2013)不会被 20 日 -10% 阈值连续触发，第一层区间标签才是补回前三轮的关键"
+
+# ---------------------------------------------------------------------
+# 4. 已知数据限制（全格披露，不隐瞒、不补 0、不回填）
+# ---------------------------------------------------------------------
+[known_limitations]
+industry_panel = "申万一级行业 1999-12-30 起 28 个 code；2014 变 40、2015 后 34 个，前后维度变化，不拼接变维原始拓扑特征"
+phti_p16 = "outputs/regime_v03_phti_p16_w10.csv 自 2005-01-04 起 5283 行，覆盖 R2/R3 全程但 R1 只剩尾部"
+phti_p27 = "outputs/regime_v03_phti_p27_w10.csv 自 2014-02-24 起，早期不可用"
+summary_gap = "1999-12-30..2005-01-03 无冻结 TDA 摘要：记缺失，不补 0、不用未来数据回填、不重算 TDA"
+breadth = "outputs/regime_breadth_daily.csv 自 2011-01-04 起；1999-2010 无宽度/换手率代理"
+pe_margin = "上证 PE 与融资余额本地不可得，牛熊『满足 2/3』规则在前段须降级并全格披露"
+warmup = "MA250 需要 250 交易日 warm-up，前段开头不可判定状态"
+benchmark_mismatch = "用户七轮用上证 000001 盘中峰谷；本工程后段基准是万得全A 881001.WI，两者不可直接套；前段合成含上证但仍是等权口径"
+
+# ---------------------------------------------------------------------
+# 5. 判定层设计（本轮不执行）
+# ---------------------------------------------------------------------
+[judgement_layer]
+status = "NOT RUN — 待用户确认 pending_items"
+engine = "冻结调用 verify_v03_split.py，仅替换宽表标签列与输出前缀，保留 20 日 circular block bootstrap B=1000、Bonferroni(12)=0.0041666、双闸门、事件级去重、三档判定"
+prefix = "regime_v05_*"
+frozen_results_kept = "v0.3/v0.4 的 14 条推测结论与全部否定结果原样保留，作为历史版本，不因升版抹掉"
+
+# ---------------------------------------------------------------------
+# 6. 待用户确认项（不擅自决定）
+# ---------------------------------------------------------------------
+[pending_items]
+item_1 = "前段是否改用真 Wind 881001.WI：已实测 Wind 连接器可取 1999-01-04 起日线，且 2012-12-31 OHLC(2194.69/2223.24/2223.24/2190.89) 与 v0.4 冻结序列逐值一致，属同一序列。当前主口径严格按用户原话用合成；若要全程单一真 Wind，需分批导入约 3144 行并另做敏感性对照"
+item_2 = "判定层主判据样本：继续保持原 14 事件（与前版可比、避免按结果换样本），还是把前段新急性事件一并纳入主判据"
+item_3 = "第一层区间端点：用本轮算出的 TDX 精确峰谷日，还是用用户原文的年月区间（月首/月末交易日）"
+
+# ---------------------------------------------------------------------
+# 7. 边界
+# ---------------------------------------------------------------------
+[boundary]
+gate1 = "暂停，须先与用户讨论设计再执行"
+final_2025_test = "封存未读取、未评分"
+gate2 = "未启动"
+phti_performance = "未运行"
+no_recompute = "本轮不重算 TDA、不重算 14 条推测判定、不重算状态掩码"
+no_scoring = "无显著性检验、bootstrap、IC、夏普、PR-AUC、仓位、阈值反选、命中率、提前量、召回率、误报计算"
+no_extrapolation = "不得外推为『TDA 对 A 股危机预警有效或无效』"
+
+# =====================================================================
+# 追加修订（2026-11-10 12:50 +08:00）—— 不回改上方预登记原文
+# 用户裁决：「补不到才退而用合成」
+# 实测 Wind 881001.WI 前段可得、且与 v0.4 后段为同一序列
+#   → 主基准改为【全程单一真 881001.WI】，合成口径降级为 SUPERSEDED 对照
+#   本修订仍在看任何判定结果之前登记
+# =====================================================================
+
+[amendment_2026_11_10_true_wind]
+registered_at = "2026-11-10T12:50:00+08:00"
+user_verbatim = "补不到才退而用合成"
+decision = "用户澄清原句是条件式：只有当真万得全A 补不到时才退而用上证+深成等权合成。上一轮把『2012-12-31 之前用合成』当作硬口径执行，属误读，现按用户本意纠正。"
+probe_result = "Wind 连接器 mcp__wind-finance__get_index_kline 可取 881001.WI 自 1999-01-04 起日线；1999-12-30 为基期 1000.00；2012-12-31 OHLC(2194.69/2223.24/2223.24/2190.89) 与 v0.4 冻结序列逐值一致 → 同一序列，能补到。"
+ruling = "item_1 RESOLVED：主基准 = 全程单一真 881001.WI；合成序列不再作为主口径，另存 SUPERSEDED 作为敏感性对照 S1，不删除、不抹掉。"
+still_pending = ["item_2 判定层主判据样本", "item_3 第一层区间端点"]
+discipline = "本修订只改 DATA LAYER 的收益来源；判定层仍 NOT RUN；不得按结果反选口径。"
+
+[amendment_2026_11_10_true_wind.benchmark]
+front_source = "third_party/wind/881001WI_front_*.json → outputs/xy_wind_all_a_front_19991230_20121228.csv（Wind 原始返回逐字落盘，零手工转录）"
+back_source = "outputs/xy_wind_all_a_daily_v04_full.csv / regime_daily_labels_v04.csv close_wind，2012-12-31..2026-11-03 逐值不变"
+front_levels = "直接使用 Wind 原始收盘点位，不做反向递推、不做缩放、不做链式重构；1999-12-30=1000.00 为 Wind 指数基期"
+splice = "同一序列自然衔接：2012-12-28 收 2190.89 → 2012-12-31 收 2223.24，跨段日收益 +1.47656888% 归后段，由真 Wind 前后两日收盘直接算出"
+no_level_jump = true
+back_bitwise_identical = true
+calendar_unchanged = "前段 3144 日 + 后段 3339 日 = 6483 标签日；Wind 前段交易日历与 TDX 000001/399001 共同交易日逐日一致，日历行数不变"
+extra_anchor_row = "取消合成版的 1999-12-29 链首锚点行：真 Wind 基期 1999-12-30 之前无收盘价，首日收益记缺失（空），不补 0、不回填、不编造点位；产物总行数由合成版 6484 变为 6483"
+reference_columns = "CSV 仍保留 sse_close / szse_close / r_sse_pct / r_szse_pct / r_eq_pct 五列，仅作 SUPERSEDED 合成口径的敏感性对照 S1，明确不参与主基准；主口径只看 bench_source / benchmark_close / benchmark_ret_pct / wind_close"
+
+[amendment_2026_11_10_true_wind.acceptance_extra]
+assertions = [
+  "1999-12-30 真 Wind 收盘 = 1000.00",
+  "2012-12-28 真 Wind 收盘 = 2190.89",
+  "前段各日 benchmark_ret_pct 与真 Wind 相邻收盘收益逐值一致（容差 1e-9）",
+  "前段日期集合与 TDX 两指数共同交易日在该区间逐日一致，且恰好 3144 日",
+  "重叠取数批次（2011 全年）OHLC 逐值一致",
+  "后段 3339 行 benchmark_close 与 v0.4 close_wind 逐值差 = 0",
+  "全程 bench_source 单一值 real_wind_881001WI",
+  "确定性：脚本连续两次运行产物 sha256 相同",
+  "旧合成版产物另存 *_synthetic_superseded.*，不覆盖冻结产物",
+]
+
+[amendment_2026_11_10_true_wind.boundary]
+unchanged = "上方 [boundary] 全部条目继续有效；Gate 1 暂停、2025 最终测试集未读取、Gate 2 未启动、PHTI 正式绩效未运行"
+no_scoring = "本修订仍不含任何显著性检验、bootstrap、IC、夏普、PR-AUC、命中率、提前量、召回率、误报计算"
+no_extrapolation = "结论不得外推为『TDA 对 A 股危机预警有效或无效』"
+
+# =====================================================================
+# 判定层裁决（2026-11-10 13:28 +08:00）—— 在看任何判定结果之前登记
+# 用户：「主判据样本加上准备加进去得那些危机事件更好，第一层区间端点暂定先用tdx算出得精确峰谷日」
+# 本段不回改上方任何预登记原文
+# =====================================================================
+
+[amendment_2026_11_10_judgement_ruling]
+registered_at = "2026-11-10T13:28:00+08:00"
+user_verbatim = "主判据样本加上准备加进去得那些危机事件更好，第一层区间端点暂定先用tdx算出得精确峰谷日"
+item_2_resolved = "主判据样本纳入前段（1999-12-30..2012-12-28）按冻结定义新算出的急性危机事件，不再固定原 14 事件；后段冻结 17 段一字不改"
+item_3_resolved = "第一层制度区间端点暂用 TDX 000001 盘中精确峰谷日（outputs/regime_v05_rounds_exact.csv），用户注明『暂定』，后续可改"
+no_result_driven_selection = "两项裁决在跑判定前登记；不得按结果换成固定 14 事件或年月区间"
+
+[amendment_2026_11_10_judgement_ruling.tier2_acute]
+front_label_rule = "Y_t=1 iff min_{j=1..20}(P_{t+j}/P_t - 1) <= -0.10，P 为全程单一真 881001.WI 收盘；与冻结后段完全同一阈值、同一 20 日窗口"
+front_event_clustering = "Y_t=1 的日期按日历间隔 >20 天切段（沿用冻结 xy_crisis_events.csv 的 clusters_from_flags 规则）；left_censored_label = 该段起点是否为前段日历首日"
+front_event_ids = "101 起编号，与后段 1..17 不冲突，也不落入冻结排除集 {3,16}；新事件全部进 included"
+back_frozen = "后段 17 段（含事件 1 左截断、D3 排除 3/16）逐值照抄，不按价格重算；crisis_in / crisis_in_usable / crisis_event_id / pre5/pre10/pre20 / pre_vol_type 后段逐值不变"
+disclosure = "前段事件与后段 14 事件分列披露事件数、日数与有效摘要覆盖，并同时给出合并后的主判据读数；不得只报合并数字"
+
+[amendment_2026_11_10_judgement_ruling.tier1_regime]
+exact_dates = "outputs/regime_v05_rounds_exact.csv 的 peak_date / trough_date"
+semantics = "第一层只做描述性状态对比：区间内 vs 区间外的摘要中位数、有效样本数、缺失数"
+forbidden = "不进 8340 格网格、不进主判据、不算命中率/提前量/召回/精确率/误报；两层结果不混在一起计算命中率"
+severity_only = "峰与谷是事后认定，只用于事后衡量严重程度；工程首个冻结危机日 2015-07-01 相对 R4 事先起点 2015.06 是滞后，不得包装成提前预警"
+
+[amendment_2026_11_10_judgement_ruling.front_state_degradation]
+warmup = "前 250 个交易日 MA250 warm-up：bull_bear_defined=0、state=undefined_warmup"
+degraded_rule = "warm-up 后仅用全程真 Wind 基准的 MA250 与 250 日回撤定义 bull / bear / fuzzy；5 个 state 版本列在前段取同一值并标记 degraded"
+degraded_thresholds = "MA250 = trailing 250 收盘均值；dd250 = close / trailing-250 收盘最大值 - 1；bull iff close>MA250 且 dd250>-0.10；bear iff close<MA250 且 dd250<=-0.20（沿用 v0.1 熊市 dd<-20% 阈值）；其余 fuzzy。阈值在跑判定前固定，不得按结果调整"
+missing_inputs = "宽度/换手率代理 2011-01-04 才有、上证 PE 与融资余额本地不可得 → 前段 pre_vol_type 留空、overheat=0、oversold=0、pre_high_vol/pre_low_vol 前段不进掩码"
+bear_in_crisis = "前段按降级 bear 与 crisis_in 交集计算；后段沿用冻结值"
+full_disclosure = "降级规则、缺失输入、前段有效样本数在报告与 manifest 中全格披露，不把降级状态伪装成冻结 v0.1 口径"
+
+[amendment_2026_11_10_judgement_ruling.summary_coverage]
+a16_w10 = "前段 2005-01-04..2012-12-28 从冻结 outputs/regime_v03_phti_p16_w10.csv 按日期填入 a16_* 列；1999-12-30..2005-01-03 全空"
+a16_w20_w60 = "引擎按日期从冻结 outputs/regime_win_summaries_phti_p16_{20,60}.csv 自动取值（该文件自 2005-01-04 起）"
+a27_and_b = "a27_* 与 b_* 前段全空（冻结摘要分别自 2014-02-24 / 2012-12-31 起）；xy_30 前段亦缺失"
+no_fill = "所有缺失记空 -> NaN，不补 0、不用未来数据回填、不重算 TDA、不拼接变维原始拓扑特征"
+known_consequence = "normal 基线因样本扩展而改变；A16 的 W_resid 尺度回归因样本扩展而重估，故后段 W_resid 值也会变。v0.5 与 v0.3/v0.4 不可逐值比较，旧结论保留为历史版本，不因升版抹掉"
+
+[amendment_2026_11_10_judgement_ruling.engine]
+frozen_call = "冻结调用 verify_v03_split.main()，源码一字不改；仅把 OUT/CFG 重定向到 SCRATCH 并替换输入宽表与事件 CSV"
+statistics_unchanged = "20 日 circular block bootstrap B=1000、SEED=20261108 按稳定标签派生、Bonferroni(12)=0.0041666、双闸门 p_raw<阈值 且 CI 不跨零、事件级去重为主读数、三档判定"
+determinism = "同一输入连跑两遍，grid CSV 必须逐字节一致、keypack 相同；否则报错停止"
+outputs = "全部另存 regime_v05_* 前缀；v0.1-v0.4、all14/all17/all19、config/study.toml 一字不改"
+
+[amendment_2026_11_10_judgement_ruling.boundary]
+gate1 = "暂停，须先与用户讨论设计再执行"
+final_2025_test = "封存未读取、未评分"
+gate2 = "未启动"
+phti_performance = "未运行"
+no_scoring = "无绩效、IC、夏普、PR-AUC、仓位、阈值反选、命中率、提前量、召回率、误报计算；bootstrap 仅用于 14 条推测的样本内描述性对账"
+no_extrapolation = "全部结论为样本内描述性对账，不得外推为『TDA 对 A 股危机预警有效或无效』"

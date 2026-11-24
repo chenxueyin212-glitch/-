@@ -1,0 +1,233 @@
+# 推测核对线 · 分线重解 + 10 日短尺度 v0.3（预登记草案）
+# 状态：设计冻结待用户拍板；截至落盘时未执行任何新计算、未查看任何分组结果
+# 父规格：config/regime_conjecture_check.toml (v0.1)
+#         config/regime_window_sensitivity_v0.2.toml
+# v0.1 / v0.2 的判定、脚本与全部产物原封保留，不覆盖、不回改、不重新解释
+version = "v0.3"
+status = "active_2026_11_09_d3_resolved"  # 原 status = "draft_pending_user_decision"（保留于注释，不删原文）
+kind = "within-sample descriptive / line-separated conjecture re-adjudication + short-window sensitivity"
+frozen_at = "2026-11-08"
+
+[user_decisions]
+D1_two_lines_w10 = true
+D1_note = "两条点云都取 w=10：A(PHTI 状态点云) 新增 w=10 格，B(兴业相关网络) 用 v0.2 已有的 w=10"
+D2_crisis_label = "unchanged"
+D2_note = "保持 Gate 0 冻结口径：未来 20 交易日内合成指数最低累计简单收益 <= -10%。观测窗口与预测期限分离，不改变标签 = 消融纪律 Q21"
+D3_short_events = "UNDECIDED"
+D4_failed_task = "audited"
+
+[decision_D3_pending]
+status = "RESOLVED 2026-11-09 by explicit user decision, see [stage2_amendment_2026_11_09]; 本段原文与 fact / options 全部保留作审计记录，但不再作为有效判据"
+fact = "16 个可用危机事件长度 [32,5,1,14,17,12,17,12,14,2,32,6,17,1,1,16]，其中 6 个短于 10 日 (5,1,2,6,1,1)；w=10 能填满 10/16"
+options = [
+  "A: 6 个短事件单列标『无法判定』并披露，不进主判据（助手建议，未采纳）",
+  "B: 长度不足时取可用长度的可变窗口，须另行登记标准化口径",
+  "C: 全部 16 个事件进主判据，短事件按左截断处理并披露",
+]
+blocks = "影响事件级样本定义与去重口径，故未定则不能跑主判据；不影响摘要计算可先做"
+
+[v0_2_failure_audit]
+audited_at = "2026-11-08"
+conclusion = "后台任务 exit 1 不在计算阶段，而在 main() 第 4 步 [4/4] manifest：json.dumps(report, allow_nan=False) 或 numpy 标量序列化失败；regime_win_summaries_manifest.json 未生成"
+evidence = [
+  "8 份 PHTI 摘要 + 4 份 XY 摘要全部落盘，时间 22:01-22:23",
+  "4 份 XY 摘要各 3339 行，空值 0 / 非有限 0 / 不可解析 0；v0.1 基线 24 抽样日空字段 0",
+  "legacy 与 v0.2 的 W_t 均无 nan/inf 字符串、无非有限值；warm-up 空白 60 行属预期",
+  "eligible audit: 3339 日全部匹配 v0.1，删日 0、删列 40",
+  "缺失的只有 manifest、grid.csv、verdicts.json、report.html（后三者本属下游脚本）",
+]
+root_candidate = "运行时 report 中的 numpy 标量(np.int64/np.bool_)或某个 NaN；已实测 json.dumps 对 np.int64/np.bool_ 抛 TypeError、对 float('nan') 抛 ValueError，与既往 numpy 序列化问题同类"
+action = "不重算兴业 4 窗口 TDA；复用已落盘的 w=10/15/20/30 摘要，但须先做独立完整性/确定性复核，不得因『任务失败』盲目信任其数值"
+no_rerun_of_xy_grid = true
+
+[grid]
+xy_corr_window_days = [10, 30]
+xy_w10_source = "outputs/regime_win_summaries_xy_10.csv（v0.2 已产出，需复核）"
+xy_w30_role = "长尺度对照，逐点复现 v0.1，不进主判据"
+phti_vr_window_days = [10, 20, 60]
+phti_w10 = "新增，v0.2 网格最短 20；p16 与 p27 各一份"
+phti_w60_role = "v0.1 对照"
+phti_sma_window_days = 60
+
+[line_separation]
+rule = "A(PHTI 状态点云: 点=交易日, w=点数)、B(兴业相关网络: 点=行业, w=坐标长度)、C(原文 3.3 节形态对照) 三类构造严格分线，独立出表、独立判定，绝不合并计数"
+same_name_warning = "h1_count / avg_pair_corr / leading_eig_share 在 A、B 同名异物；avg_pair_corr 与 B 的 industry_average_correlation 只是同一金融量的不同窗口估计，只能作对照，不能当两次独立重复"
+split_required = ["C04 拆成 A 形状格 / B 形状格分别计数", "C07 按 A 的 H1、B 的 H1、B 的 H2 分维报，禁止合并方向计数", "C10 用各线自己的窗口重判结构性可测性，不得用 A 的 60 日尺子替 B 下结论"]
+b_line_new_work = "B 线需新增可判命题（14 条中仅 C12 明确属 B），并新算 B 的 H0 层级聚类摘要（xy_corrected_features.csv 只有 H1/H2 与景观，从未产出 H0 摘要）"
+
+[frozen_from_v0_1]
+date_policy = "全日期；2025-05-30 后标牛熊未定义，仅保留摘要描述"
+state_labels = "outputs/regime_daily_labels.csv，三层截图规则，主口径 v0_primary"
+granularity = "逐日"
+pre_windows = [-20, -10, -5]
+pre_primary = -10
+bootstrap = "20 日区块自助 × 1000，percentile 95% CI，双侧"
+correction = "Bonferroni(12)，未校正与校正两栏都给"
+dedup = "危机段按 16 个事件起点计，禁止日级重复计数"
+scale_residual = "W2/RV20、h0_death/窗口 RMS、W2 对 RV20+平均相关+第一特征值占比的回归残差"
+label_versions = 5
+verdict_levels = ["支持", "矛盾", "无法判定（含数据不足）"]
+disclosure = "全格 + 全窗口 + 全部否定结果披露；不按结果反选窗口、阈值、摘要、标签或状态划分"
+
+[primary_judgements]
+rule = "每条线各预设一个主判据格，不从全网格中挑；两线独立判定，绝不合并成一句『变好了/没变好』"
+A_line = "w=10，危机中 vs 常态，剥尺度残差后的形状摘要，事件级中位数差异 + 区块自助 + Bonferroni；须 p16/p27 方向一致且 5 个标签版本稳定"
+B_line = "w=10，危机中 / 危机前 vs 常态，H0 层级聚类摘要 + H1 无弦环 + H2/N 分维报，同样标准"
+J1_post_hoc = "事后响应：危机中是否可检出，两线各自报，B 线必须有自己的判据（v0.2 的 J1 只列 A 的 6 个尺度量，此为本版修正）"
+J2_ex_ante = "事前提前：pre=-10 是否出现显著格，须同时过 Bonferroni 且 5 标签版本稳定；J1 与 J2 分开报"
+J3_structural = "各线按自身窗口报可填满事件数，禁止把两套窗口并成一个字典"
+J4_noise_cost = "A: 点数(10) < 维数(16/27)，H0 仅 9 个有限 death、H1 受点数-维数比约束、10 点图 W2 方差暴涨；B: Fisher z 标准误 1/sqrt(w-3) 由 0.192(30日) 升至 0.378(10日)，N/H2 计数漂移须单列"
+cross_window = "禁止跨窗口比 delta 绝对值；统一报窗口内标准化效应 delta/MAD(常态)，显著性与方向各窗口独立判定"
+
+[stop_threshold]
+user_statement = "10 日尺度做完还不行，才认为确实做不到"
+operational = "两线主判据均判『矛盾』或『无法判定』→ 记为在 w=10、当前行业价格数据、当前牛熊/危机标签下未检出，并保留全部否定结果"
+wording_ban = "仍不得写成『TDA 对 A 股做不到 / TDA 对 A 股危机预警无效』的全称外推；只能作为用户个人决定停止该路线的门槛"
+no_post_hoc = "禁止事后换窗口、模型、特征、阈值或标签追正"
+
+[boundary]
+performance = false
+ic_or_sharpe = false
+position_or_weights = false
+gate1_2025_final_test = false
+gate2 = false
+overwrite_v0_1_or_v0_2 = false
+modify_study_toml = false
+note = "全部样本内描述性对账；不加载股指收益评分、不读 Gate 1 封存的 2025 最终测试集、不改 config/study.toml。Gate 1 仍暂停、Gate 2 不启动、PHTI 正式绩效未运行"
+
+[stage1_amendment_2026_11_08]
+status = "registered after stage-1 SUMMARY audit, BEFORE any group / significance / verdict result was seen"
+trigger = "stage A set 'w=30 full-point equivalence with v0.1' as a reuse blocker; this contradicts the parent v0.2 spec's node_count_control, which explicitly replaces the eligible list. The blocker was mis-specified, not the data."
+finding_kept = "w30_full_equivalence.passed = FALSE and all difference numbers are retained; 40 consecutive dates from 2018-03-19, one node fewer per date, exactly equal to eligible_audit.n_dropped_columns = 40; n_nodes / avg_corr / leading_eig_share differ; ALL 8 topology fields reproduce v0.1 exactly (max diff 0.0)"
+sampled_check_blind_spot = "v0.2's 24-date xy_equivalence_check did not cover 2018-03 and therefore reported a false pass; sampled equivalence must never replace full-point audit"
+amendment = "reusable now requires (i) w=10 determinism on 24 recomputed dates, (ii) node count identical across all windows, (iii) w=30 discrepancy fully explained by the parent spec, (iv) zero blanks/nonfinite and full date coverage. w=30 equivalence failure is disclosed separately and is NOT silently turned into a pass."
+scope = "affects only whether v0.2 summaries may be reused; changes NO primary judgement, NO verdict, NO state label, NO statistic; produces no support/contradiction conclusion"
+fisher_z_correction = "v0.2 J4 used 1/sqrt(w-3): 0.192 (w=30) and 0.378 (w=10). The implementation estimates correlation from w-1 daily returns, so the correct values are 1/sqrt(29-3)=0.196 and 1/sqrt(9-3)=0.408. Report both and mark the v0.2 figures as nominal-window approximations."
+cross_implementation_tolerance = "stage C MST-vs-ripser H0 check: on 24 sampled dates edge counts and finite-death counts match exactly, max abs diff 2.8e-8..5.7e-8 from ripser's internal float32 cast. Cross-implementation tolerance set to 1e-6; same-implementation determinism in stage A keeps 1e-8. H0 summaries are computed in float64 Prim, not ripser."
+fisher_z_and_tolerance_are_engineering = "both corrections concern numerical equivalence thresholds only; they do not touch state labels, crisis events, group definitions, primary judgements or verdict levels"
+no_post_hoc = "primary judgements in [primary_judgements] are untouched; any later change to them requires a new version and explicit user approval"
+
+[outputs]
+prefix = "outputs/regime_v03_"
+verdicts_json = "regime_v03_verdicts.json"
+grid_csv = "regime_v03_grid.csv"
+report_html = "outputs/regime_v03_split_check_report.html"
+
+# ============================================================================
+# STAGE 2 AMENDMENT — 2026-11-09
+# 登记时点：主判据任何分组统计 / 显著性检验 / 判定结果产生之前。
+# 触发：用户指出助手把「标签段长 label_run_days」误当成「行情长度」，
+#       因而 v0.2 prior_fill_counts 与「6 个短于 10 日事件填不满窗口」的说法
+#       在概念上不成立，不能作为排除样本的依据。
+# ============================================================================
+[stage2_amendment_2026_11_09]
+registered_before_any_main_judgement_result = true
+user_decision_raw = "你犯的错是：都把标签段长当成了行情长度。所以我认为你应该只把2016-02-17以及2024-12-12的事件放一边，另外四个照常算。"
+
+# --- 1. 三种长度必须分开（概念修正，非结果修正）-----------------------------
+length_definitions = [
+  "L1 label_run_days = 连续满足 Y_t=1 的『起点日个数』；只回答『有多少个 t 往后看 20 日能凑够 -10%』，与下跌持续多久无关",
+  "L2 crisis_in 日数 = 该段被标为危机中的日级样本数；只决定『危机中』分组有多少行可用于统计",
+  "L3 span_to_worst = 起点 -> 未来 20 日窗口内最低点的交易日距离；回答『跌到最深用了多久』，且被 20 日标签窗口截断，不是事件总长度",
+  "关键：逐日摘要的回看窗口 w 与事件持续长度是两个独立量。每天都有一张持续图，事件短只减少该状态组的样本行数，不会让 w=10 的摘要『算不出来』，也不需要左截断或可变窗口",
+]
+voided_statements = [
+  "v0.2 [grid].prior_fill_counts = {10:10, 15:6, 20:2, 30:2, 40:0, 60:0}（由 label_run_days >= w 计数）——保留作历史记录，作废，不得再作判据",
+  "v0.3 [decision_D3_pending].fact 中『6 个短于 10 日』——同上作废",
+  "助手 2026-11-09 上一轮『6 段填不满 10 日窗口 / 尺子比事件长』的图示与文字——作废",
+]
+full_recompute_16_events = "L1=[32,5,1,14,17,12,17,12,14,2,32,6,17,1,1,16]; L2=[33,6,1,14,19,14,17,13,15,2,42,6,21,1,1,16]; L3=[20,8,20,20,20,19,20,14,20,13,20,18,15,7,20,20]（L3 被 20 日标签窗口截断）"
+three_fill_counts_distinct = [
+  "按 L1 >= w: w10=10/16, w15=6/16, w20=2/16, w30=2/16, w40=0/16, w60=0/16",
+  "按 L2 >= w: w10=10/16, w15=7/16, w20=3/16, w30=2/16, w40=1/16, w60=0/16（w30 初稿手写为 1/16 系笔误；按 L2=[33,6,1,14,19,14,17,13,15,2,42,6,21,1,1,16] 中 >=30 的有 33 与 42 共 2 个，已按脚本实测更正，登记于 stage2c）",
+  "按 L3 >= w: w10=14/16, w15=12/16, w20=9/16, w30=0/16, w40=0/16, w60=0/16",
+]
+J3_rewrite = "J3 结构性可测性按 A/B 分线、按 L1/L2/L3 三列分别披露，禁止合并成一个数，禁止用 A 的 60 日尺子替 B 下结论。L3 因被 20 日标签窗口截断，不得表述为『事件长度』"
+
+# --- 2. D3 用户决定（本版主判据的事件样本定义）------------------------------
+[stage2_amendment_2026_11_09.d3_resolution]
+status = "RESOLVED / 用户拍板，助手不得更改、不得推广、不得代拟理由"
+excluded_event_ids = [3, 16]
+excluded_onsets = ["2016-02-17", "2024-12-12"]
+excluded_handling = "两段整段从主判据剔除，单列标『无法判定（用户指定排除）』并披露其摘要描述统计；不进事件级去重、不进日级 crisis_in 组、不进任何显著性计数"
+excluded_reason = "用户指令未给出理由；助手不得代拟、不得把『标签段短』『真实跨度短』或任何尺度论证当作排除依据。上一轮传统金融定性（2016-02-17 熊市二次探底/前一轮延续；2024-12-12 小微盘风格性去杠杆）仅作整理者描述性注解，明确标注不是用户理由、不是判据"
+retained_short_label_run_events = [
+  "event 4 / 2016-04-15 / label_run=1 / span=20 → 照常算",
+  "event 11 / 2021-02-18 / label_run=2 / span=13 → 照常算",
+  "event 13 / 2022-09-06 / label_run=6 / span=18 → 照常算",
+  "event 15 / 2024-10-08 / label_run=1 / span=7 → 照常算",
+]
+retained_note = "这 4 段按用户指定『照常算』：用统一的 w=10 固定窗口，不做左截断、不用可变窗口、不因 L1/L2/L3 任一长度小于 10 而降级"
+included_event_count = 14
+event_level_dedup = "事件级去重按 14 个起点，每事件 1 个值；日级 crisis_in 组 = 214 日（原 221 日 - 排除两段共 7 日）；normal 基线仍为『非危机、非危机前、牛熊已定义』"
+full_16_sensitivity = "预先登记另跑一次『含全部 16 个可用事件』的敏感性版本，全披露且与主判据并列；这是看结果前登记的对照，不是事后反选"
+not_a_scale_decision = "排除集与长度口径无关：被排除的 2016-02-17 (L3=8) 与 2024-12-12 (L3=20) 一短一长，而保留的 2024-10-08 (L3=7) 更短。禁止把该决定解释为『短事件量不动』"
+
+# --- 3. 连带技术修正（均为预先发现的结构性事实，非按结果改规则）-------------
+[stage2_amendment_2026_11_09.method_corrections]
+five_label_versions_triviality = "5 个标签版本只改变 bull/bear/fuzzy 划分，crisis_in / pre5 / pre10 / pre20 / normal 在这 5 版下完全相同。因此『5 版本方向稳定』对危机类主判据是平凡成立（trivially satisfied），不构成独立稳健性证据。本版仍全跑全披露 5 版，但危机类命题的稳健性条件改由『A 线 p16/p27 两面板方向一致 + w=10/20/60 全窗口方向一致』承担；牛熊类命题（C09）才真正受 5 版影响"
+b_w30_no_h0 = "B 线 w=30 长尺度对照只有 H1/H2/景观/betti/控制量，没有 H0 摘要（阶段 1 只新算了 w=10 的 H0）。因此 B 线跨窗口对照在 H0 维度上不可比，须单列披露，不得把 w=10 的 H0 结论外推到 w=30"
+a_w10_structural = "A 线 w=10 时 10 个点 < 16/27 维，H0 仅 9 个有限 death、H1 受点数-维数比约束，W2 方差放大；只作主判据不做跨窗口绝对量级比较"
+b_w10_noise = "B 线 w=10 相关用 W-1=9 个日收益估计，Fisher z 标准误 1/sqrt(9-3)=0.408（w=30 为 1/sqrt(29-3)=0.196）；N/H2 计数漂移须单列"
+scale_residual = "A 线形状摘要须另报剥尺度版本：W_t/window_rms、h0_death_mean/window_rms、W_t 对 (window_rms, avg_pair_corr, leading_eig_share) 回归残差；B 线距离本身尺度无关，不套用 A 的残差口径"
+
+# --- 4. 主判据规则（本段冻结后一次性执行）----------------------------------
+[stage2_amendment_2026_11_09.primary_rules]
+rule = "每条线各预设一个主判据格，不从全网格中挑；两线独立出结论，绝不合并成一句『变好了/没变不好』"
+A_line = "A(PHTI 状态点云) w_points=10，p16 与 p27 各一份；state=crisis_in（事件级 14 起点 + 日级 214 日两口径都报）；summary={W_resid, W_over_rms, h0_over_rms, h0_death_cv, h0_top1_over_rest_median, h1_count} 6 格；判『支持』需至少 1 格过 Bonferroni(12) 且 CI 不跨零、且 p16/p27 方向一致；全不显著判『无法判定』，不得判『矛盾』（方向未预设）"
+B_line = "B(兴业相关网络) w_coords=10；state=crisis_in 与 pre10 各报；summary 按 H0 层级聚类（xy_h0_death_cv, xy_h0_top1_over_rest_median, xy_h0_components_0p4/0p6/0p8）、H1 无弦环（h1_count, h1_landscape_l1）、H2/N 空腔（h2_count, h2_landscape_l1, max_h2_persistence）分维独立报，禁止跨维合并方向计数；同一显著性与方向一致性标准（B 线单面板，改由 H0/H1/H2 三维内部一致 + w=30 对照承担）"
+J1_post_hoc = "事后响应：危机中 vs 常态是否可检出；A/B 各自定义、各自出结论"
+J2_ex_ante = "事前提前：pre10 主窗口（pre5/pre20 敏感性）是否出现显著格；须过 Bonferroni 且两面板/全窗口方向一致；与 J1 分开报，不得用 J1 显著反推有提前量"
+J4_noise_cost = "A/B 各自按 [method_corrections] 单列噪声代价"
+verdict_levels = ["支持", "矛盾", "无法判定（含数据不足）"]
+split_14_conjectures = "14 条推测逐条按 A/B/C 归属重判：C04 拆成 A 形状格 / B 形状格分别计数；C07 按 A-H1、B-H1、B-H2 分维报，禁止合并方向；C10 按各线自身窗口与 L1/L2/L3 三列重判；C01 的实测依据（section33 C 构造）不得作为 A/B 判定证据；C12 仍不设 N 方向"
+B_new_descriptive_propositions = [
+  "BN1 危机中 B 线 H0 层级聚类形状与常态是否有稳定差异（描述性附加，不进主判据计数）",
+  "BN2 危机前 10 日 B 线 H0 形状与常态是否无稳定差异（对应 C04 的 B 侧）",
+  "BN3 牛熊状态在 B 线 H0 聚类上是否有差异（对应 C09 的 B 侧）",
+]
+B_new_note = "三条为首次产出 H0 摘要后新增的描述性命题，全披露、不事后挑、不因结果好坏升级为主结论"
+stop_threshold_unchanged = "沿用 [stop_threshold]：两线主判据均判『矛盾』或『无法判定』→ 记为在 w=10、14 事件、当前行业价格数据与当前标签下未检出；仍不得写成『TDA 对 A 股做不到』的全称外推；本次结果作为用户个人决定是否停止该路线的依据"
+boundary_unchanged = "全日期、逐日、样本内描述性对账；不读 Gate 1 封存的 2025 最终测试集、不算绩效/IC/夏普/仓位/阈值反选、不改 config/study.toml、不覆盖 v0.1/v0.2 任何产物"
+
+# --- 5. 阶段2工程漏算修复（判据未改，审计留痕）-----------------------------
+[stage2b_gridfix_2026_11_09]
+status = "工程缺陷修复；判据、命题、样本定义、阈值、标签版本全部未改"
+discovered_at = "检查初版 regime_v03_grid.csv 的 state 覆盖时发现"
+defect = "主判据脚本的网格循环写了 `if sname not in m: continue`，但 bull/bear/fuzzy 三个状态存于 version_masks() 返回的字典而非 m，导致这三个状态的所有格被静默跳过；C09 与 BN3 因取不到 cell 而被误判『无法判定』"
+not_post_hoc = "修复只恢复本应在全网格中出现的行，不含任何按显著性/方向挑选；判据规则在 [stage2_amendment_2026_11_09.primary_rules] 一字未改；修复前后两份产物都保留"
+preserved = ["outputs/regime_v03_grid_pregridfix.csv", "outputs/regime_v03_verdicts_pregridfix.json"]
+fix = "去掉错误的 `sname not in m` 判断，改为检查实际使用的 vm 字典；invariant(crisis/pre/overheat/oversold) 组仍只算 v0_primary 并复制 4 版且标记 version_invariant=true，bull/bear/fuzzy 组按 5 个标签版本各自真算"
+also_fixed = "C14 与 16 事件敏感性改用缓存的 normal 基线，与全网格共享同一组 bootstrap 抽样（配对比较），避免同一基线在不同检验里用不同随机抽样"
+seed_stabilisation = "初版用单一共享 rng 流，新增/删除网格行会改变其余格的抽样顺序，造成数值抖动。最终版改为每个 bootstrap 用 sub_rng(SEED, 标签...) 独立派生确定性种子，任一格的数值与其所在行序、与其他格是否存在完全无关；同一脚本重跑逐位一致。pregridfix 产物保留为『漏算证据』，不作数值对照基准"
+expected_effect = "网格行数增加、bull/bear/fuzzy 格恢复；主判据(J1)判定不变；因抽样方式整体改为独立种子，J2/C04/C07/C10 的具体 p 值会与 pregridfix 不同（方法升级，非结果反选），但判定级别须逐项核对"
+report_disclosure = "报告须披露初版漏算、修正前后 C09/BN3 判定变化、以及修正前产物路径；不得把修复后的 C09 结果描述为『新发现』"
+
+[stage2c_spec_typo_2026_11_09]
+status = "规格手写计数勘误，非判据、非结果变更"
+item = "[stage2_amendment_2026_11_09].three_fill_counts_distinct 中『按 L2 >= w: w30=1/16』"
+correction = "改为 2/16；L2 序列中 >=30 的值为 33 与 42"
+registered_before_report = true
+reason = "手写时漏数，脚本按实际序列计算为 2；J3 三列计数全部以脚本输出为准，规格只作文字登记。该笔误不影响任何判定（J3 是结构性披露，不是显著性判定）"
+
+# --- 6. 14 条推测的 v0.3 判定规则文本归档 ----------------------------------
+# 这些规则在 src/regime_check/verify_v03_split.py 撰写时即已写死，脚本先落盘、
+# 后运行；此处为规则文本归档，未修改任何规则、阈值或判定级别。
+[stage2d_conjecture_rules_archived_2026_11_09]
+status = "规则文本归档；脚本运行时已冻结，此处不改规则"
+note = "14 条的 v0.3 判定沿用 v0.1 的方向/显著性计数逻辑，但按线别拆分归属；跨线混合的 C04/C07/C10 拆成独立计数。三档 vocabulary 不含『部分支持』（v0.1 曾用），故 C01 的 v0.3 规则为：A 线 6 格中上升<4 判矛盾，否则无法判定（不设支持档，因该命题无独立显著证据）"
+C01 = "A 线 6 个尺度量危机中方向；B 景观 L1 单列；C 构造 ρ 不作证据"
+C02 = "W_t 对 (window_rms, avg_pair_corr, leading_eig_share) 回归 R² + W_resid 危机中显著；沿用 v0.1 单侧规则并登记规则盲区"
+C03 = "A 线 14 事件起点后 60 日 W_t 峰值滞后，单样本区块自助中位数对 0；两面板不合并"
+C04 = "A 形状 18 格 / B 形状 18 格分别计数，两者均 0 显著才判支持"
+C05 = "A 线缩量型危机前 6 格方向，>=4 格低于常态判支持；显著性单列"
+C06 = "A 线放量型危机前 6 格方向，>=4 格高于常态判支持；显著性单列"
+C07 = "A-H1 / B-H1 / B-H2 分维，全无显著判无法判定"
+C08 = "A 线 6 格 h0_death_cv 危机前方向与显著性，沿用 v0.1 规则"
+C09 = "A 线 10 格牛熊中位数差非零 + B 线 H0 五版差；判『有差异』这一层，不判拓扑独有"
+C10 = "各线自身窗口 + L1/L2/L3 三列，结构性披露，判无法判定"
+C11 = "A 线 14 事件起点 6 日内峰值 4 格，事件级去重；全无显著判无法判定"
+C12 = "B 线 N 不设方向，按冻结规格不判定"
+C13 = "市场层中性，数据不足判无法判定"
+C14 = "A 线 W 变化率，探索性，按规格不升级为主结论"
+BN1_BN2_BN3 = "B 线 H0 三条描述性命题全披露，n_sig 单列，不进主判据计数、不因结果升级"

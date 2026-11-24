@@ -1,0 +1,65 @@
+﻿﻿编号,指标,展示值,精确期望值,口径说明,生成脚本,产物文件,产物字段,容差,论文/报告出处
+D01,基准日历交易日数,6502,6502,paper_drafts/run_v033_rebuild_bench.py,outputs/regime_v033_benchmark_daily.csv,行数,0,论文 1.3 / 3.1 / 5.5
+D02,基准日历与独立日历差集,双向为空,0,与 trade_calendar 双向差集,paper_drafts/run_v033_rebuild_bench.py,outputs/regime_v033_benchmark_audit.json,missing/extra,0,DATA_MANIFEST 5.2
+D03,旧版基准日历交易日数（仅保真对照）,6483,6483,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_oldcal.csv,输入日历行数,0,REPRODUCE 6
+D04,冻结危机事件数,45,45,前段 28（101—128）＋后段 17（1—17）,src/regime_check/build_v05_benchmark_realwind.py,outputs/regime_v05_crisis_events.csv,事件行数,0,论文 5.1
+R01,事件识别数,45/45,45,识别窗 [起点−20， 事件结束+20],paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,identified,0,论文表 5-1
+R02,识别分档 起点前／窗内／损伤窗,24／7／14,"""24",7，14，三档合计 45 漏报 0,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,n_pre/n_in_window/n_damage,0,论文 5.3
+R03,可核算事件数,31/45,31,归属窗 [起点−20， 事件结束],paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,caught_n,0,论文表 5-1
+R04,方案一实际切换事件数,19,19,S3+B10+7项4票,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,switched_n (arm=A),0,论文 5.2 / 6.1
+R05,方案一首次判型正确数,10,10,19 个已切换事件中,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,first_type_correct_n (arm=A),0,论文 5.2
+R06,方案一最终判型正确数,7,7,含最多 1 次纠错后,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,final_type_correct_n (arm=A),0,论文 5.2
+R07,告警日占比,23.5%,0.235158,S3+B10 状态机 方案一与方案二相同,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,alarm_day_share,0.0005,论文表 5-1
+R08,误报段数,83,83,与全部事件归属窗无交集的告警极大段,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_episodes (arm=A),0,论文 5.4
+R09,误报日数（核算口径）,778,778,27 年合计 折 29.9 日/年,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_days_total (arm=A),0,论文 5.4
+R10,方案一误报激活段数,33,33,误报段中实际切换仓位者,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_activated_n (arm=A),0,论文 5.4
+P01,方案一净损益差合计,+79.0,79.010771,事件侧＋误报段 算术和 非组合收益率,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=A),0.05,论文表 5-1 第 1 行
+P02,方案一事件侧损益差,+147.4,147.398579,路径四−路径三 逐事件单位净值,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,e2e_p4_p3_total (arm=A),0.05,论文表 5-1 第 1 行
+P03,方案一误报段损益差,−68.4,-68.387808,33 个激活段成本合计,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_cost_total (arm=A),0.05,论文表 5-1 第 1 行
+P04,方案二净损益差合计,+104.9,104.859346,S3+B10+10项6票（C1 重点候选）,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=B),0.05,论文表 5-1 第 2 行
+P05,方案二事件侧损益差,+153.1,153.130500,同 P02 口径,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,e2e_p4_p3_total (arm=B),0.05,论文表 5-1 第 2 行
+P06,方案二误报段损益差,−48.3,-48.271154,21 个激活段,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_cost_total (arm=B),0.05,论文 5.4（四）
+P07,方案二误报激活段数,21,21,由 33 降至 21,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_activated_n (arm=B),0,论文 5.4（四）
+P08,方案一＋滚动钟 R 净损益差,+114.8,114.823228,7项4票＋每告警段一钟,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=C),0.05,论文表 5-1 第 3 行
+P09,方案二＋滚动钟 R 净损益差,+140.7,140.671803,10项6票＋滚动钟,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=D),0.05,论文表 5-1 第 4 行
+P10,R×10项4票 净损益差,+94.1,94.141978,析因网格其余四组之一,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=E1),0.05,论文 5.4（六）
+P11,R×7项5票 净损益差,+125.9,125.902944,同上,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=E2),0.05,论文 5.4（六）
+P12,R×10项5票 净损益差,+119.0,118.955893,同上,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=E3),0.05,论文 5.4（六）
+P13,R×7项6票 净损益差,+87.8,87.822583,同上,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=E4),0.05,论文 5.4（六）
+G01,析因网格 7项4票 净损益差,+79.0,79.010771,单钟 与方案一同行,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F7K4),0.05,论文 5.4（五）
+G02,析因网格 10项4票 净损益差,+65.1,65.081877,只扩容不抬门槛 低于方案一,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F10K4),0.05,论文 5.4（五）
+G03,析因网格 7项5票 净损益差,+94.8,94.759887,次要敏感性,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F7K5),0.05,论文 5.4（五）
+G04,析因网格 10项5票 净损益差,+83.1,83.146591,次要敏感性,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F10K5),0.05,论文 5.4（五）
+G05,析因网格 7项6票 净损益差,+73.5,73.490161,只抬门槛不扩容 低于方案一,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F7K6),0.05,论文 5.4（五）
+G06,析因网格 10项6票 净损益差,+104.9,104.859346,扩容与加严同时做 六格最高,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_newcal.csv,net_reference (arm=F10K6),0.05,论文 5.4（五）
+A01,消融 S3 无告警状态管理 净损益差,−5.3,-5.269136,符号为负 不得写成 +4.3,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=F),0.05,论文表 5-1 消融行
+A02,消融 S3 事件侧损益差,+114.1,114.060965,同 P02 口径,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,e2e_p4_p3_total (arm=F),0.05,论文表 5-1 消融行
+A03,消融 S3 误报段损益差,−119.3,-119.330100,62 个激活段,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_cost_total (arm=F),0.05,论文表 5-1 消融行
+A04,消融 S3 告警日占比,17.3%,0.173024,无状态管理层,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,alarm_day_share (arm=F),0.0005,论文表 5-1 消融行
+A05,B10 边际贡献合计改善,84.3,84.279907,方案一−消融S3 = 79.010771−(−5.269136),paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference(A)−net_reference(F),0.1,论文 5.4（三）
+A06,B10 边际贡献 事件侧分项,33.3,33.337614,147.398579−114.060965,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,e2e(A)−e2e(F),0.1,论文 5.4（三）
+A07,B10 边际贡献 误报分项,50.9,50.942292,−68.387808−(−119.330100),paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_cost(A)−false_cost(F),0.1,论文 5.4（三）
+A08,负对照 C2 净损益差,+30.2,30.190166,拓扑平静提前解除告警 未采纳,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference (arm=G),0.05,论文表 5-1 第 7 行
+A09,负对照 C2 误报日数,705,705,由 778 降至 705,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,false_days_total (arm=G),0,论文 5.4（八）
+I01,R 独立增量（方案一之上）,+35.8,35.812457,C−A = 114.823228−79.010771,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference(C)−net_reference(A),0.05,论文 5.4（六）
+I02,R 独立增量（方案二之上）,+35.8,35.812457,D−B = 140.671803−104.859346,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference(D)−net_reference(B),0.05,论文 5.4（六）
+I03,C1 相对基准增量,+25.8,25.848575,B−A = 104.859346−79.010771,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_reference(B)−net_reference(A),0.05,论文 5.4（四）
+I04,方案一扣除最大正贡献事件后净损益差,+26.6,26.621084,收益集中度描述 非显著性检验,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_without_top_positive (arm=A),0.05,论文 5.4（四）
+I05,方案二扣除最大正贡献事件后净损益差,+51.3,51.304771,同上,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,net_without_top_positive (arm=B),0.05,论文 5.4（四）
+I06,方案一已切换子集损益差中位数,+1.157,1.156823,19 个已切换事件 13 正 6 负,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,diff_p4_p3_median_switched (arm=A),0.001,论文 5.4（三）
+I07,方案二已切换子集损益差中位数,+3.220,3.219626,17 个已切换事件 13 正 4 负,paper_drafts/run_v034_candidates.py,outputs/regime_v034_paper_table.csv,diff_p4_p3_median_switched (arm=B),0.001,论文 5.4（三）
+F01,旧日历保真门 方案一净损益差,78.958744,78.958744,旧日历复现冻结值 误差≤1e-6 不过则停止,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_oldcal.csv,net_reference (arm=F7K4),0.000001,REPRODUCE 3
+F02,旧日历保真门 方案一事件侧,147.556072,147.556072,同 F01,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_oldcal.csv,e2e_p4_p3_total (arm=F7K4),0.000001,REPRODUCE 3
+F03,旧日历保真门 方案一误报段,-68.597328,-68.597328,同 F01,paper_drafts/run_v033_ledger.py,outputs/regime_v033_arms_oldcal.csv,false_cost_total (arm=F7K4),0.000001,REPRODUCE 3
+S01,封存验证段区间,2025-01-01 至 2026-11-03,442 个交易日,协议口径 含非纯样本外前段,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,validation_span / sealed_days,0,留出验证报告 第一节
+S02,封存验证事件识别,6/6,"""3 叙事＋3 标签""",双口径并列 不混算,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,layers.*.hit_narrative / hit_label,0,留出验证报告 第三节
+S03,封存验证 四层告警段数,13／8／54／15,"""S3=13 B10=8 REF8=54 G0=15""",四层对照,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,layers.*.n_episodes_sealed,0,留出验证报告 第二节
+S04,封存验证 四层告警日数,61／113／167／78,"""S3=61 B10=113 REF8=167 G0=78""",同上,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,layers.*.alarm_days_total,0,留出验证报告 第二节
+S05,封存验证误报 协议口径,19.8 日/年,19.8,36 误报日/442 日 含 30 日非纯样本外 不得单独引用,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,layers[B10].false_days_per_year_outside,0.05,留出验证报告 第四节
+S06,封存验证误报 纯样本外口径,3.8 日/年,3.8,2025-04-08 起 381 交易日 6 误报日 全在 2025-11-21~28,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_false_alarm_sealed.csv,窗外误报段起止与天数,0.05,留出验证报告 第四节
+S07,封存验证误报占比 纯样本外,1.6%,0.016,6/381 2026 年为零,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_false_alarm_sealed.csv,同上,0.001,留出验证报告 第四节
+S08,训练期同口径误报,29.9 日/年,29.9,与 S05/S06 比较时须同口径,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,layers[B10].train_false_days_per_year,0.05,留出验证报告 第四节
+S09,封存验证判型 确定判对数,0/2,0,N1 误判 N2 无法判定 N3 随访不足,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_episode_attribution.csv,judged_type 与评价列,0,留出验证报告 第五节
+S10,封存验证实际切换事件数,2/6,2,N1 与 L1 各记一次 首响同为 2026-03-19 不得写成 3/6,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_episode_attribution.csv,switched 标志,0,留出验证报告 第三节
+S11,封存验证归因文件校验哈希,61799f5cbf82a828,61799f5cbf82a828,产物完整性校验,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,attribution_sha,0,REPRODUCE 5
+S12,封存验证误报文件校验哈希,fc0f817e5b39f053,fc0f817e5b39f053,同上,src/regime_check/build_v018_sealed_validation.py,outputs/regime_v018_summary.json,false_alarm_sha,0,REPRODUCE 5

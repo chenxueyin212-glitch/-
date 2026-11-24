@@ -1,0 +1,2242 @@
+{
+  "version": "v0.17",
+  "purpose": "产品栈条件下的拓扑条件增量检验（样本内描述性）",
+  "created": "2026-11-14T22:29:55+08:00",
+  "registered": "2026-11-14T21:52:26+08:00",
+  "config": "config/regime_topology_increment_v0.17.toml",
+  "config_sha256": "c017bdc19bc34440e78f6b92ec82cf976a784f4a7623fe864d497e7f563a0f64",
+  "inputs": {
+    "regime_v07_split_wide.csv": "a3ca11e8bb73c6cad0c9d61e919a4b398e86ce95843b1d8484a2088e4a90bba9",
+    "regime_v05_benchmark_daily.csv": "3669b9c1d9753d1a75500476be582ad43c2ecdcb4403cfce858cc45c5e5ef9ba",
+    "regime_v012_trigger_event_timing.csv": "4a3378fa0ee21fade104094468bf3af9bcba7a533d93cd62f0fba1280218e559",
+    "regime_v016_governed_pnl_summary.csv": "e5abe547c2ec12306bdfc5db8ca6302dd0483a594348e51032e7c52c1bfb500f",
+    "regime_v016_governed_pnl_event_matrix.csv": "a63fc93740deaa91fa1676d448dae8da2d22155b19f70f9f6cbb785f98c4adfb",
+    "regime_v09_q1_trigger.csv": "02c5793233fcbbb5bbb8d0aeb61745d6d543df45eb573ca82d3f5bc6fa390ded"
+  },
+  "outputs": {
+    "regime_v017_conditional_auc.csv": "4761bdc596adc9c99a2d7a4b09e291b1660c79cd9276293c5ff4e57e0fed0274",
+    "regime_v017_account_arms.csv": "40ec18591e4f28bab0556a7280f7eab499567fc67d02ffd99ca3b30bac9a5814",
+    "regime_v017_account_event_matrix.csv": "48bc449d783fe871c8ea0056cc3c5eb4b8a1bad65d6c7204d8dbbf22a11d64f9"
+  },
+  "sample": {
+    "days": 6483,
+    "events": 45,
+    "p_early_alarm_days": 272,
+    "p_events_with_early_days": 27,
+    "n_false_alarm_days": 776,
+    "n_false_segments": 83,
+    "normal_days": 4211,
+    "prox_unique_days": 450,
+    "deep_alarm_days_descriptive": 481
+  },
+  "layer1_verdict": "拓扑有产品侧增量·增强件候选",
+  "layer1_cond_discrimination_count": 9,
+  "layer1_delta_count": 5,
+  "old_standard_read": "老标准低估",
+  "old_standard_bare_mean_auc_star": 0.5997727272727272,
+  "old_standard_cond_mean_auc_star": 0.6724454545454546,
+  "deep_alarm_feature_medians": {
+    "a16_W_t": 0.01936439304735304,
+    "a16_h0_death_mean": 0.06855607570873366,
+    "a16_h1_count": 0.0,
+    "a16_window_rms": 0.1043991764412272,
+    "a16_avg_pair_corr": 0.8906848216394586,
+    "a16_leading_eig_share": 0.8990962057577311,
+    "b_h2_count": 3.0,
+    "b_h1_count": 27.0,
+    "b_h2_landscape_l1": 8.78866281088797e-05,
+    "b_industry_average_correlation": 0.7829293130414061,
+    "b_xy_h0_death_mean": 0.2876885466035183
+  },
+  "arms": [
+    {
+      "arm": "C0",
+      "arm_name": "控制臂（冻结合体）",
+      "identified": 45,
+      "n_pre": 24,
+      "n_in_window": 7,
+      "n_damage": 14,
+      "n_miss": 0,
+      "caught_n": 31,
+      "trigger_offset_median": -15.0,
+      "alarm_day_share": 0.23430510566095944,
+      "false_days_total": 776,
+      "false_days_per_year": 29.924417707851305,
+      "false_days_ident_total": 502,
+      "false_days_ident_per_year": 19.358321764615148,
+      "false_episodes": 83,
+      "switched_n": 19,
+      "diff_p4_p3_median_switched": 1.156822828221582,
+      "diff_p1_p3_median": 0.7059583734021269,
+      "diff_p4_p3_median": 0.0,
+      "e2e_p1_p3_total": 180.36536866284692,
+      "e2e_p4_p3_total": 147.55607214761943,
+      "false_cost_total": -68.59732816848626,
+      "false_cost_median": 0.0,
+      "false_activated_n": 33,
+      "net_reference": 78.95874397913317,
+      "n_revoke": 117,
+      "n_topo3": 0,
+      "gate_pass": "是",
+      "verdict": "控制臂·对账基准"
+    },
+    {
+      "arm": "C1",
+      "arm_name": "实验臂甲（票箱扩容）",
+      "identified": 45,
+      "n_pre": 24,
+      "n_in_window": 7,
+      "n_damage": 14,
+      "n_miss": 0,
+      "caught_n": 31,
+      "trigger_offset_median": -15.0,
+      "alarm_day_share": 0.23430510566095944,
+      "false_days_total": 776,
+      "false_days_per_year": 29.924417707851305,
+      "false_days_ident_total": 502,
+      "false_days_ident_per_year": 19.358321764615148,
+      "false_episodes": 83,
+      "switched_n": 17,
+      "diff_p4_p3_median_switched": 3.2196263545716475,
+      "diff_p1_p3_median": 0.7059583734021269,
+      "diff_p4_p3_median": 0.0,
+      "e2e_p1_p3_total": 180.36536866284692,
+      "e2e_p4_p3_total": 153.2902676030195,
+      "false_cost_total": -48.2711541638739,
+      "false_cost_median": 0.0,
+      "false_activated_n": 21,
+      "net_reference": 105.01911343914558,
+      "n_revoke": 117,
+      "n_topo3": 0,
+      "gate_pass": "是",
+      "verdict": "可作产品增强件候选"
+    },
+    {
+      "arm": "C2",
+      "arm_name": "实验臂乙（拓扑平静撤销）",
+      "identified": 45,
+      "n_pre": 22,
+      "n_in_window": 7,
+      "n_damage": 16,
+      "n_miss": 0,
+      "caught_n": 29,
+      "trigger_offset_median": -14.0,
+      "alarm_day_share": 0.20407218880148079,
+      "false_days_total": 697,
+      "false_days_per_year": 26.87798858553139,
+      "false_days_ident_total": 404,
+      "false_days_ident_per_year": 15.579207157180319,
+      "false_episodes": 94,
+      "switched_n": 17,
+      "diff_p4_p3_median_switched": 0.7565606148107529,
+      "diff_p1_p3_median": 0.05554863904558838,
+      "diff_p4_p3_median": 0.0,
+      "e2e_p1_p3_total": 174.75986810806629,
+      "e2e_p4_p3_total": 144.48885326725573,
+      "false_cost_total": -114.05860612258302,
+      "false_cost_median": 0.0,
+      "false_activated_n": 39,
+      "net_reference": 30.43024714467272,
+      "n_revoke": 130,
+      "n_topo3": 91,
+      "gate_pass": "是",
+      "verdict": "无净增量"
+    }
+  ],
+  "false_episodes": {
+    "C0": [
+      {
+        "episode_start": "2000-02-23",
+        "episode_end": "2000-02-29",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-03-16",
+        "episode_end": "2000-03-22",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-05-11",
+        "episode_end": "2000-05-22",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-09-05",
+        "episode_end": "2000-09-12",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.035979884324112
+      },
+      {
+        "episode_start": "2001-02-08",
+        "episode_end": "2001-02-15",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.080488151333949
+      },
+      {
+        "episode_start": "2002-05-16",
+        "episode_end": "2002-05-24",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.2725403881584727
+      },
+      {
+        "episode_start": "2002-06-13",
+        "episode_end": "2002-06-21",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -6.582683266192957
+      },
+      {
+        "episode_start": "2002-11-12",
+        "episode_end": "2002-12-18",
+        "episode_len": 27,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.556372273104847
+      },
+      {
+        "episode_start": "2003-04-24",
+        "episode_end": "2003-05-28",
+        "episode_len": 18,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2003-10-29",
+        "episode_end": "2003-11-06",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-02-25",
+        "episode_end": "2004-03-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-06-08",
+        "episode_end": "2004-07-09",
+        "episode_len": 24,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-07-27",
+        "episode_end": "2004-08-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-10-14",
+        "episode_end": "2004-11-15",
+        "episode_len": 23,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-07-08",
+        "episode_end": "2005-08-01",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-09-22",
+        "episode_end": "2005-10-11",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-10-28",
+        "episode_end": "2005-11-07",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-03-08",
+        "episode_end": "2006-03-14",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-05-24",
+        "episode_end": "2006-05-31",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-08-11",
+        "episode_end": "2006-08-29",
+        "episode_len": 13,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.710060027278384
+      },
+      {
+        "episode_start": "2006-12-08",
+        "episode_end": "2006-12-14",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2007-01-31",
+        "episode_end": "2007-02-13",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -2.8263602932772294
+      },
+      {
+        "episode_start": "2008-12-24",
+        "episode_end": "2009-01-06",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-02-26",
+        "episode_end": "2009-03-20",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -10.494625881570864
+      },
+      {
+        "episode_start": "2009-04-27",
+        "episode_end": "2009-05-05",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-11-26",
+        "episode_end": "2009-12-03",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.037018925011755854
+      },
+      {
+        "episode_start": "2010-01-25",
+        "episode_end": "2010-02-05",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-05-17",
+        "episode_end": "2010-05-26",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 4.324139203386068
+      },
+      {
+        "episode_start": "2010-06-29",
+        "episode_end": "2010-07-09",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-11-12",
+        "episode_end": "2010-11-24",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-12-28",
+        "episode_end": "2011-01-05",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-04-28",
+        "episode_end": "2011-05-05",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-05-25",
+        "episode_end": "2011-06-02",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-08-08",
+        "episode_end": "2011-08-16",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 4.514016426606082
+      },
+      {
+        "episode_start": "2011-09-05",
+        "episode_end": "2011-09-13",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.8025129829684063
+      },
+      {
+        "episode_start": "2011-12-06",
+        "episode_end": "2011-12-12",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.5449426268047795
+      },
+      {
+        "episode_start": "2012-03-28",
+        "episode_end": "2012-04-10",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.2829353356847761
+      },
+      {
+        "episode_start": "2012-06-26",
+        "episode_end": "2012-07-04",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2012-09-20",
+        "episode_end": "2012-09-27",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.4996867118937107
+      },
+      {
+        "episode_start": "2013-03-04",
+        "episode_end": "2013-03-08",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-03-28",
+        "episode_end": "2013-04-11",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-06-07",
+        "episode_end": "2013-07-16",
+        "episode_len": 25,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.736953923744757
+      },
+      {
+        "episode_start": "2013-10-28",
+        "episode_end": "2013-11-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-12-20",
+        "episode_end": "2013-12-26",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-02-25",
+        "episode_end": "2014-03-06",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-04-25",
+        "episode_end": "2014-05-06",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-12-23",
+        "episode_end": "2014-12-30",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2015-01-19",
+        "episode_end": "2015-01-23",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.771387218776567
+      },
+      {
+        "episode_start": "2015-05-07",
+        "episode_end": "2015-05-13",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.6878791397821669
+      },
+      {
+        "episode_start": "2015-11-03",
+        "episode_end": "2015-11-09",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -0.9200871402268227
+      },
+      {
+        "episode_start": "2016-04-22",
+        "episode_end": "2016-04-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.1125377213589536
+      },
+      {
+        "episode_start": "2016-08-01",
+        "episode_end": "2016-08-05",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2016-12-14",
+        "episode_end": "2016-12-20",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-02-01",
+        "episode_end": "2018-02-23",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-03-23",
+        "episode_end": "2018-03-30",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-06-22",
+        "episode_end": "2018-06-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-08-02",
+        "episode_end": "2018-08-14",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-10-11",
+        "episode_end": "2018-11-07",
+        "episode_len": 20,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.4934629444984133
+      },
+      {
+        "episode_start": "2018-11-23",
+        "episode_end": "2018-12-05",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.133952622552071
+      },
+      {
+        "episode_start": "2019-08-06",
+        "episode_end": "2019-08-14",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-03-12",
+        "episode_end": "2020-04-14",
+        "episode_len": 23,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.31269284820842
+      },
+      {
+        "episode_start": "2020-07-16",
+        "episode_end": "2020-08-03",
+        "episode_len": 13,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-09-09",
+        "episode_end": "2020-09-17",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-02-26",
+        "episode_end": "2021-03-04",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-03-22",
+        "episode_end": "2021-04-06",
+        "episode_len": 11,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-07-27",
+        "episode_end": "2021-08-03",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-09-16",
+        "episode_end": "2022-09-27",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-10-28",
+        "episode_end": "2022-11-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.550445683870195
+      },
+      {
+        "episode_start": "2022-12-22",
+        "episode_end": "2022-12-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-04-25",
+        "episode_end": "2023-05-04",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-10-20",
+        "episode_end": "2023-10-30",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.443999884100756
+      },
+      {
+        "episode_start": "2024-02-01",
+        "episode_end": "2024-02-22",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -9.87483152191897
+      },
+      {
+        "episode_start": "2024-03-27",
+        "episode_end": "2024-04-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.5750593586129735
+      },
+      {
+        "episode_start": "2024-06-25",
+        "episode_end": "2024-07-01",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.2820187917881185
+      },
+      {
+        "episode_start": "2024-10-09",
+        "episode_end": "2024-11-07",
+        "episode_len": 22,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.862197980452409
+      },
+      {
+        "episode_start": "2025-01-02",
+        "episode_end": "2025-01-23",
+        "episode_len": 16,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.984288051161178
+      },
+      {
+        "episode_start": "2025-04-07",
+        "episode_end": "2025-04-24",
+        "episode_len": 14,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.3574379369284095
+      },
+      {
+        "episode_start": "2025-11-21",
+        "episode_end": "2025-11-28",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.00389609175975
+      },
+      {
+        "episode_start": "2026-03-19",
+        "episode_end": "2026-04-13",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.694916338944944
+      },
+      {
+        "episode_start": "2026-06-01",
+        "episode_end": "2026-06-18",
+        "episode_len": 14,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-07-07",
+        "episode_end": "2026-08-12",
+        "episode_len": 27,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-09-11",
+        "episode_end": "2026-09-17",
+        "episode_len": 5,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      },
+      {
+        "episode_start": "2026-10-14",
+        "episode_end": "2026-11-03",
+        "episode_len": 14,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      }
+    ],
+    "C1": [
+      {
+        "episode_start": "2000-02-23",
+        "episode_end": "2000-02-29",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-03-16",
+        "episode_end": "2000-03-22",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-05-11",
+        "episode_end": "2000-05-22",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-09-05",
+        "episode_end": "2000-09-12",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -0.8100348727925533
+      },
+      {
+        "episode_start": "2001-02-08",
+        "episode_end": "2001-02-15",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.080488151333949
+      },
+      {
+        "episode_start": "2002-05-16",
+        "episode_end": "2002-05-24",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.589729536615094
+      },
+      {
+        "episode_start": "2002-06-13",
+        "episode_end": "2002-06-21",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.441889798757349
+      },
+      {
+        "episode_start": "2002-11-12",
+        "episode_end": "2002-12-18",
+        "episode_len": 27,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.556372273104847
+      },
+      {
+        "episode_start": "2003-04-24",
+        "episode_end": "2003-05-28",
+        "episode_len": 18,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2003-10-29",
+        "episode_end": "2003-11-06",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-02-25",
+        "episode_end": "2004-03-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-06-08",
+        "episode_end": "2004-07-09",
+        "episode_len": 24,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-07-27",
+        "episode_end": "2004-08-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-10-14",
+        "episode_end": "2004-11-15",
+        "episode_len": 23,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-07-08",
+        "episode_end": "2005-08-01",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-09-22",
+        "episode_end": "2005-10-11",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-10-28",
+        "episode_end": "2005-11-07",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-03-08",
+        "episode_end": "2006-03-14",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-05-24",
+        "episode_end": "2006-05-31",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-08-11",
+        "episode_end": "2006-08-29",
+        "episode_len": 13,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.899367739823646
+      },
+      {
+        "episode_start": "2006-12-08",
+        "episode_end": "2006-12-14",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2007-01-31",
+        "episode_end": "2007-02-13",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -2.8263602932772294
+      },
+      {
+        "episode_start": "2008-12-24",
+        "episode_end": "2009-01-06",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-02-26",
+        "episode_end": "2009-03-20",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-04-27",
+        "episode_end": "2009-05-05",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-11-26",
+        "episode_end": "2009-12-03",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-01-25",
+        "episode_end": "2010-02-05",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-05-17",
+        "episode_end": "2010-05-26",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-06-29",
+        "episode_end": "2010-07-09",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-11-12",
+        "episode_end": "2010-11-24",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-12-28",
+        "episode_end": "2011-01-05",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-04-28",
+        "episode_end": "2011-05-05",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-05-25",
+        "episode_end": "2011-06-02",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-08-08",
+        "episode_end": "2011-08-16",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-09-05",
+        "episode_end": "2011-09-13",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-12-06",
+        "episode_end": "2011-12-12",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2012-03-28",
+        "episode_end": "2012-04-10",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2012-06-26",
+        "episode_end": "2012-07-04",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2012-09-20",
+        "episode_end": "2012-09-27",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-03-04",
+        "episode_end": "2013-03-08",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-03-28",
+        "episode_end": "2013-04-11",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-06-07",
+        "episode_end": "2013-07-16",
+        "episode_len": 25,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.736953923744757
+      },
+      {
+        "episode_start": "2013-10-28",
+        "episode_end": "2013-11-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-12-20",
+        "episode_end": "2013-12-26",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-02-25",
+        "episode_end": "2014-03-06",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-04-25",
+        "episode_end": "2014-05-06",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-12-23",
+        "episode_end": "2014-12-30",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2015-01-19",
+        "episode_end": "2015-01-23",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.363747668122663
+      },
+      {
+        "episode_start": "2015-05-07",
+        "episode_end": "2015-05-13",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 9.558152978894373
+      },
+      {
+        "episode_start": "2015-11-03",
+        "episode_end": "2015-11-09",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2016-04-22",
+        "episode_end": "2016-04-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2016-08-01",
+        "episode_end": "2016-08-05",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2016-12-14",
+        "episode_end": "2016-12-20",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-02-01",
+        "episode_end": "2018-02-23",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-03-23",
+        "episode_end": "2018-03-30",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-06-22",
+        "episode_end": "2018-06-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-08-02",
+        "episode_end": "2018-08-14",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-10-11",
+        "episode_end": "2018-11-07",
+        "episode_len": 20,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.4934629444984133
+      },
+      {
+        "episode_start": "2018-11-23",
+        "episode_end": "2018-12-05",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.133952622552071
+      },
+      {
+        "episode_start": "2019-08-06",
+        "episode_end": "2019-08-14",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-03-12",
+        "episode_end": "2020-04-14",
+        "episode_len": 23,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.31269284820842
+      },
+      {
+        "episode_start": "2020-07-16",
+        "episode_end": "2020-08-03",
+        "episode_len": 13,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-09-09",
+        "episode_end": "2020-09-17",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-02-26",
+        "episode_end": "2021-03-04",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-03-22",
+        "episode_end": "2021-04-06",
+        "episode_len": 11,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-07-27",
+        "episode_end": "2021-08-03",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-09-16",
+        "episode_end": "2022-09-27",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-10-28",
+        "episode_end": "2022-11-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-12-22",
+        "episode_end": "2022-12-29",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-04-25",
+        "episode_end": "2023-05-04",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-10-20",
+        "episode_end": "2023-10-30",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.443999884100756
+      },
+      {
+        "episode_start": "2024-02-01",
+        "episode_end": "2024-02-22",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -7.65813005416236
+      },
+      {
+        "episode_start": "2024-03-27",
+        "episode_end": "2024-04-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -0.6366942176370127
+      },
+      {
+        "episode_start": "2024-06-25",
+        "episode_end": "2024-07-01",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.4916277947271226
+      },
+      {
+        "episode_start": "2024-10-09",
+        "episode_end": "2024-11-07",
+        "episode_len": 22,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.862197980452409
+      },
+      {
+        "episode_start": "2025-01-02",
+        "episode_end": "2025-01-23",
+        "episode_len": 16,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.803155643752354
+      },
+      {
+        "episode_start": "2025-04-07",
+        "episode_end": "2025-04-24",
+        "episode_len": 14,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.3574379369284095
+      },
+      {
+        "episode_start": "2025-11-21",
+        "episode_end": "2025-11-28",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-03-19",
+        "episode_end": "2026-04-13",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.694916338944944
+      },
+      {
+        "episode_start": "2026-06-01",
+        "episode_end": "2026-06-18",
+        "episode_len": 14,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-07-07",
+        "episode_end": "2026-08-12",
+        "episode_len": 27,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-09-11",
+        "episode_end": "2026-09-17",
+        "episode_len": 5,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      },
+      {
+        "episode_start": "2026-10-14",
+        "episode_end": "2026-11-03",
+        "episode_len": 14,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      }
+    ],
+    "C2": [
+      {
+        "episode_start": "2000-02-23",
+        "episode_end": "2000-02-25",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-03-16",
+        "episode_end": "2000-03-20",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-05-11",
+        "episode_end": "2000-05-18",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2000-09-05",
+        "episode_end": "2000-09-12",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.035979884324112
+      },
+      {
+        "episode_start": "2001-02-08",
+        "episode_end": "2001-02-15",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.080488151333949
+      },
+      {
+        "episode_start": "2002-05-16",
+        "episode_end": "2002-05-24",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.2725403881584727
+      },
+      {
+        "episode_start": "2002-06-13",
+        "episode_end": "2002-06-21",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -6.582683266192957
+      },
+      {
+        "episode_start": "2002-11-12",
+        "episode_end": "2002-12-16",
+        "episode_len": 25,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.556372273104847
+      },
+      {
+        "episode_start": "2003-01-02",
+        "episode_end": "2003-01-09",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.226382103937687
+      },
+      {
+        "episode_start": "2003-04-24",
+        "episode_end": "2003-05-26",
+        "episode_len": 16,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2003-10-29",
+        "episode_end": "2003-11-04",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-02-25",
+        "episode_end": "2004-03-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-04-15",
+        "episode_end": "2004-04-22",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-06-08",
+        "episode_end": "2004-06-16",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-07-02",
+        "episode_end": "2004-07-07",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-07-27",
+        "episode_end": "2004-07-29",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2004-10-14",
+        "episode_end": "2004-11-11",
+        "episode_len": 21,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-07-07",
+        "episode_end": "2005-07-28",
+        "episode_len": 16,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-09-22",
+        "episode_end": "2005-10-11",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2005-10-28",
+        "episode_end": "2005-11-03",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-03-08",
+        "episode_end": "2006-03-10",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-05-24",
+        "episode_end": "2006-05-29",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2006-08-11",
+        "episode_end": "2006-08-25",
+        "episode_len": 11,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.710060027278384
+      },
+      {
+        "episode_start": "2006-12-08",
+        "episode_end": "2006-12-12",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2007-01-31",
+        "episode_end": "2007-02-09",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -2.8263602932772294
+      },
+      {
+        "episode_start": "2007-03-06",
+        "episode_end": "2007-03-12",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -17.626299404918427
+      },
+      {
+        "episode_start": "2007-07-05",
+        "episode_end": "2007-07-25",
+        "episode_len": 15,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -15.155022685179361
+      },
+      {
+        "episode_start": "2009-02-26",
+        "episode_end": "2009-03-18",
+        "episode_len": 15,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -10.494625881570864
+      },
+      {
+        "episode_start": "2009-04-27",
+        "episode_end": "2009-05-05",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-09-29",
+        "episode_end": "2009-10-13",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2009-11-26",
+        "episode_end": "2009-12-03",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.037018925011755854
+      },
+      {
+        "episode_start": "2010-01-25",
+        "episode_end": "2010-02-03",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-05-11",
+        "episode_end": "2010-05-26",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 3.1289445640831355
+      },
+      {
+        "episode_start": "2010-06-29",
+        "episode_end": "2010-07-07",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-11-12",
+        "episode_end": "2010-11-24",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2010-12-28",
+        "episode_end": "2010-12-31",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-01-20",
+        "episode_end": "2011-01-24",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-04-28",
+        "episode_end": "2011-05-03",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-05-25",
+        "episode_end": "2011-06-02",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2011-08-08",
+        "episode_end": "2011-08-16",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 4.514016426606082
+      },
+      {
+        "episode_start": "2011-09-05",
+        "episode_end": "2011-09-08",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.8025129829684063
+      },
+      {
+        "episode_start": "2011-09-28",
+        "episode_end": "2011-10-11",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.7273033014616592
+      },
+      {
+        "episode_start": "2011-12-06",
+        "episode_end": "2011-12-12",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.5449426268047795
+      },
+      {
+        "episode_start": "2012-03-28",
+        "episode_end": "2012-04-10",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.2829353356847761
+      },
+      {
+        "episode_start": "2012-06-26",
+        "episode_end": "2012-07-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2012-09-20",
+        "episode_end": "2012-09-25",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.4996867118937107
+      },
+      {
+        "episode_start": "2013-03-04",
+        "episode_end": "2013-03-06",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-03-28",
+        "episode_end": "2013-04-09",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-06-07",
+        "episode_end": "2013-06-19",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.736953923744757
+      },
+      {
+        "episode_start": "2013-07-05",
+        "episode_end": "2013-07-12",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -1.127359801016592
+      },
+      {
+        "episode_start": "2013-10-28",
+        "episode_end": "2013-10-31",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2013-12-20",
+        "episode_end": "2013-12-24",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-01-10",
+        "episode_end": "2014-01-14",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-02-25",
+        "episode_end": "2014-03-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-03-20",
+        "episode_end": "2014-03-24",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-04-25",
+        "episode_end": "2014-04-30",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2014-12-23",
+        "episode_end": "2014-12-26",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2015-01-19",
+        "episode_end": "2015-01-23",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.771387218776567
+      },
+      {
+        "episode_start": "2015-05-07",
+        "episode_end": "2015-05-13",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 1.6878791397821669
+      },
+      {
+        "episode_start": "2015-11-03",
+        "episode_end": "2015-11-09",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "浅快",
+        "diff_p4_p3": -0.9200871402268227
+      },
+      {
+        "episode_start": "2016-04-22",
+        "episode_end": "2016-04-27",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.1125377213589536
+      },
+      {
+        "episode_start": "2016-08-01",
+        "episode_end": "2016-08-03",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2016-12-14",
+        "episode_end": "2016-12-19",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-02-01",
+        "episode_end": "2018-02-14",
+        "episode_len": 10,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-03-23",
+        "episode_end": "2018-03-30",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-06-20",
+        "episode_end": "2018-06-29",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-08-02",
+        "episode_end": "2018-08-10",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2018-10-11",
+        "episode_end": "2018-11-05",
+        "episode_len": 18,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.4934629444984133
+      },
+      {
+        "episode_start": "2018-11-23",
+        "episode_end": "2018-12-05",
+        "episode_len": 9,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 2.133952622552071
+      },
+      {
+        "episode_start": "2019-08-06",
+        "episode_end": "2019-08-12",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-03-12",
+        "episode_end": "2020-04-10",
+        "episode_len": 21,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.31269284820842
+      },
+      {
+        "episode_start": "2020-07-16",
+        "episode_end": "2020-07-31",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2020-09-09",
+        "episode_end": "2020-09-15",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-02-26",
+        "episode_end": "2021-03-02",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-03-18",
+        "episode_end": "2021-04-01",
+        "episode_len": 11,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2021-07-27",
+        "episode_end": "2021-07-30",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-05-11",
+        "episode_end": "2022-05-18",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -6.445945847017699
+      },
+      {
+        "episode_start": "2022-09-16",
+        "episode_end": "2022-09-27",
+        "episode_len": 8,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2022-10-28",
+        "episode_end": "2022-11-04",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.550445683870195
+      },
+      {
+        "episode_start": "2022-12-22",
+        "episode_end": "2022-12-27",
+        "episode_len": 4,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-04-25",
+        "episode_end": "2023-04-27",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2023-10-20",
+        "episode_end": "2023-10-30",
+        "episode_len": 7,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -2.443999884100756
+      },
+      {
+        "episode_start": "2024-01-30",
+        "episode_end": "2024-02-22",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -6.832601693181362
+      },
+      {
+        "episode_start": "2024-03-27",
+        "episode_end": "2024-04-02",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -1.5750593586129735
+      },
+      {
+        "episode_start": "2024-06-25",
+        "episode_end": "2024-07-01",
+        "episode_len": 5,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": 0.2820187917881185
+      },
+      {
+        "episode_start": "2024-10-09",
+        "episode_end": "2024-11-05",
+        "episode_len": 20,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.862197980452409
+      },
+      {
+        "episode_start": "2025-01-02",
+        "episode_end": "2025-01-23",
+        "episode_len": 16,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -3.984288051161178
+      },
+      {
+        "episode_start": "2025-04-07",
+        "episode_end": "2025-04-22",
+        "episode_len": 12,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.3574379369284095
+      },
+      {
+        "episode_start": "2025-11-21",
+        "episode_end": "2025-11-28",
+        "episode_len": 6,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -4.00389609175975
+      },
+      {
+        "episode_start": "2026-03-19",
+        "episode_end": "2026-04-13",
+        "episode_len": 17,
+        "status": "已评估",
+        "judged_type": "深慢",
+        "diff_p4_p3": -5.694916338944944
+      },
+      {
+        "episode_start": "2026-06-01",
+        "episode_end": "2026-06-03",
+        "episode_len": 3,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-07-07",
+        "episode_end": "2026-08-10",
+        "episode_len": 25,
+        "status": "已评估",
+        "judged_type": "无法判定",
+        "diff_p4_p3": 0.0
+      },
+      {
+        "episode_start": "2026-09-11",
+        "episode_end": "2026-09-15",
+        "episode_len": 3,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      },
+      {
+        "episode_start": "2026-10-14",
+        "episode_end": "2026-10-26",
+        "episode_len": 8,
+        "status": "随访不足跳过",
+        "judged_type": "",
+        "diff_p4_p3": ""
+      }
+    ]
+  },
+  "boundary": [
+    "样本内描述性，不外推、不做实盘宣称",
+    "2025 最终测试集封存未读；不重判十四条推测与 v0.5 冻结判定",
+    "账本以事件结束日（后视镜）为已知输入的已知不足原样继承，本版不修补",
+    "路径一是上限；全样本中位数被未触发/无法判定记 0 拉平，读已切换中位与合计",
+    "误报两口径（账本 [−20,结束] vs 识别窗 [−20,+20]）不可混用",
+    "层一特征方向冻结于 v0.9 记录（前版冻结发现，非本轮反选）"
+  ]
+}

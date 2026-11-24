@@ -1,0 +1,81 @@
+# v0.19 预登记：C1 产品化补全——特征扩容与整数确认门槛析因分解
+# 登记时间：2026-11-18T13:08:56+08:00
+# 纪律：先登记后计算；本登记前未运行任何 v0.19 新组合，不依据结果改网格、不改冻结产品、不追正。
+
+[meta]
+version = "v0.19"
+title = "C1 产品化补全：特征扩容与整数确认门槛析因分解"
+registered_at = "2026-11-18T13:08:56+08:00"
+instruction_source = "用户 2026-11-18 指令：把 C1 按现在的产品思路补全，综合看效果"
+purpose = "在同一最终产品栈上拆开 C1 的确认特征扩容与整数门槛加严，描述样本内产品结果、归因通道、分布稳健性及已打开验证期重放。"
+parent_versions = ["v0.15 S3", "v0.16 B10 与单位账", "v0.17 C1", "v0.18 验证期口径"]
+status_before_run = "已登记，未计算"
+
+[frozen_product]
+trigger = "S3 三中二：五日简单收益和≤-4%；20日已实现波动>滚动756日70分位且至少250观测；距20日最高收盘回撤≥5%"
+governance = "B10：连续5日无原始命中撤销，撤销后冷却10交易日；不启用提前解除分支"
+type_votes = "原3项危机类型投票、连续2日同向确认、最多1次类型修正，逐字不变"
+plans = "深慢50%仓位+认沽+20%止损；浅快80%仓位+12%止损；无法判定不切换"
+account = "v0.16/v0.17 单位账逐字复用；事件结束日、回补、止损、认沽、误报代理窗与一般摩擦披露全部继承"
+allowed_changes = "只改危机状态确认特征集（7或10项）与当日最少整数确认票（4、5或6票）；其余全部冻结"
+prohibitions = "不改触发器、不改B10、不改类型3票、不改预案、不改账本、不改事件、不根据结果增加臂或选择未登记阈值"
+
+[features]
+features_7 = "a16_avg_pair_corr(+1), a16_leading_eig_share(+1), b_industry_average_correlation(+1), b_h2_count(-1), b_h1_count(-1), b_h2_landscape_l1(-1), b_xy_h0_death_mean(-1)"
+features_10 = "features_7 + a16_W_t(+1), a16_h0_death_mean(+1), a16_h1_count(-1)"
+extremes = "各特征对自身滚动756日历史的85/15分位；至少120个有效历史观测；缺失不补零，计数沿用v0.17实现"
+integer_rule = "当日确认通过条件为极端计数 >= 该臂最少整数确认票 k；首次切换与类型修正使用同一门槛。C0 的7项k4及原C1的10项k6须分别与v0.16/v0.17逐字段对账"
+
+[design]
+kind = "2×3 全网格；四角点为主析因，k5为预登记次要敏感性；六臂全披露，不按最高净账事后选产品"
+primary_corners = ["F7K4=7项,k4（原产品C0）", "F10K4=10项,k4（同绝对票数扩容）", "F7K6=7项,k6（原七项加严）", "F10K6=10项,k6（原C1打包臂）"]
+secondary_arms = ["F7K5=7项,k5", "F10K5=10项,k5"]
+invariants = "六臂的原始触发、B10告警掩码、45/45识别、24/7/14分档、31/45归属窗内可核算、告警日、误报日、误报段数必须完全一致；不一致即实现错误，不得解释为实验发现"
+interpretation_limit = "整数票与比例门槛不存在跨7/10项的完全等比例对应；本设计分解的是实际可执行参数，不声称存在唯一的纯特征效应或纯门槛效应"
+
+[decomposition]
+metrics = ["事件侧全程收益差合计", "误报段损益差", "净账合计", "实际切换事件数", "误报激活段数"]
+definitions = [
+  "扩容_低门槛 = F10K4 - F7K4",
+  "加严_原七项 = F7K6 - F7K4",
+  "扩容_高门槛 = F10K6 - F7K6",
+  "加严_十项 = F10K6 - F10K4",
+  "交互 = F10K6 - F10K4 - F7K6 + F7K4",
+  "C1打包差 = F10K6 - F7K4"
+]
+identity_check = "C1打包差 = 扩容_低门槛 + 加严_原七项 + 交互；数值误差容忍1e-9"
+readout = "分别报告事件侧与误报侧，禁止把正交互或单一路径差直接命名为新增拓扑特征的独立因果贡献"
+
+[sample_in_metrics]
+core = "45/45识别、24/7/14、31/45、告警占比、误报日/段、切换数、首次切换延迟中位/IQR/范围、纠错总数、事件侧合计、误报激活段数、误报段损益、净账合计"
+distribution = "已切换事件收益差中位数、正负事件数、最大单事件正贡献、扣除该事件后的净账；仅作集中度描述，不作统计显著性宣称"
+type_descriptive = "在实际切换事件上，首次判型及最终预案相对v0.8评价标签的一致数/比例；分型标签为全样本信息，只作描述，不作样本外判型准确率"
+decision = "只描述候选表现与归因，不自动替换冻结产品；若某臂净账更高仍须披露样本内机械比较与多重臂检查，负结果全保留"
+
+[validation_replay]
+status = "2025-04-08..2026-11-03 已在v0.18打开；本轮为验证期重用后的描述性重放，不是新的一次性封存样本外检验，不用于调参或改写封存结论"
+events = "v0.18 三段叙事N1/N2/N3与三段固定标签L1/L2/L3，认定窗[起点-20,结束+20]，叙事账与标签账分开归因"
+metrics = "六段识别、首响偏移与分档、各叙事段判型/预案、两本账均无交集的误报段/误报日、误报日/年（243交易日/年）、误报代理激活段数与可评估代理损益"
+expected_invariants = "六臂识别与误报日数必须一致；C0须复现6/6识别、窗外误报6日、约3.8日/年、2026年零误报；否则先查实现"
+limitations = "N3数据末日截断；叙事类型仅为用户给定对照；重放结果不再具有未触碰验证集含义；不计算或宣称验证期组合收益率"
+
+[acceptance]
+reconcile_C0 = "F7K4 对 v0.16 B10 的识别、分档、切换、事件侧、误报、净账、告警占比逐字段一致，容差1e-6"
+reconcile_C1 = "F10K6 对 v0.17 C1 的识别、分档、切换、事件侧、误报、净账、告警占比逐字段一致，容差1e-6"
+dual_run = "完整脚本独立运行两次；除manifest生成时间外，核心CSV与JSON结果一致；比较规范化摘要哈希"
+code = "新增 config/regime_c1_product_completion_v0.19.toml 与 src/regime_check/build_v019_c1_product_completion.py；冻结v0.15-v0.18文件只读，不覆盖"
+
+[outputs]
+summary = "outputs/regime_v019_c1_completion_summary.csv"
+events = "outputs/regime_v019_c1_completion_event_matrix.csv"
+false_episodes = "outputs/regime_v019_c1_completion_false_episodes.csv"
+decomposition = "outputs/regime_v019_c1_completion_decomposition.csv"
+replay = "outputs/regime_v019_c1_completion_replay_events.csv"
+manifest = "outputs/regime_v019_c1_completion_manifest.json"
+report = "outputs/crisis_c1_product_completion_v019_report.html"
+
+[known_caveats]
+c1 = "全部样本内绩效仍是反事实上限，事件结束日前视偏差和未计一般换手摩擦原样继承"
+c2 = "净账是逐事件单位账与误报段损益差算术和，不是单一组合累计收益率"
+c3 = "k5仅作敏感性，不允许在看到结果后改称主检验或据其反选阈值"
+c4 = "本实验完成不等于C1自动纳入最终产品；任何产品改写须用户另行拍板并保留版本边界"

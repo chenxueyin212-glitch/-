@@ -1,0 +1,263 @@
+# 推测核对线 · 基准续接延拓 v0.4（预登记，写于任何 v0.4 分组/显著性/判定计算之前）
+# 状态：ACTIVE_CONFIRMED_2026_11_09（原值 DRAFT_PENDING_USER_CONFIRMATION，见文末 [confirmation_2026_11_09] 留痕）。
+# 规格首次落盘时未执行任何 v0.4 bootstrap、未查看任何 v0.4 分组结果。
+# 父规格：config/regime_conjecture_check.toml (v0.1)
+#         config/regime_split_check_v0.3.toml (v0.3，active_2026_11_09_d3_resolved)
+# 触发：用户 2026-11-09 指出「万得全A日线止于2025-05-30，但是你可以用数据库里其它股的日线合成的呀？之后的日期没有定义不应该」
+# 用户 2026-11-09 拍板选方案 2：升 v0.4 独立版本，前段 wind_all_a 不动、后段续接、补 345 天定义、重跑全网格、新旧并列披露、不覆盖 v0.3。
+version = "v0.4"
+status = "ACTIVE_CONFIRMED_2026_11_09"  # was: "DRAFT_PENDING_USER_CONFIRMATION"
+kind = "within-sample descriptive / benchmark-continuation extension of v0.3"
+registered_at = "2026-11-09"
+# 下面这个字段记录的是「规格首次落盘时」的事实，保留原值作审计留痕；
+# 判定执行后的状态由文末 [confirmation_2026_11_09] 与 [judgement_run_2026_11_09] 另行登记。
+no_v04_verdict_seen_yet = true
+
+[scope]
+purpose = "只修正『2025-05-30 后 345 天被无条件标为牛熊未定义』这一数据/实现缺陷，验证补齐日期后 v0.3 的结论是否改变"
+not_a_new_signal = "不新建信号、不新建特征、不新建点云、不改窗口、不改模型、不改阈值、不做绩效"
+not_rescue = "这不是按结果反选追正。改动由数据可用性缺陷触发，且在看到任何 v0.4 结果之前冻结；v0.3 的否定结果原封保留并作为并列对照"
+all_previous_preserved = "v0.1 / v0.2 / v0.3 的规格、脚本、判定、网格、报告、台账一律不覆盖、不回改、不重新解释"
+
+[defect_being_fixed]
+evidence = [
+  "outputs/xy_wind_all_a_daily.csv 仅 3012 行，2012-12-31..2025-05-30，881001.WI 代理且非 Wind 原始导出，仅 OHLC",
+  "a_share_pit/tdx_central.db :: equity_daily_raw 16770562 行覆盖到 2026-11-04，2025-06 后每日 5000+ 只个股",
+  "index_daily_raw 的 15 个指数全部覆盖到 2026-11-04，含 000001 / 399001 / 000300 / 000852",
+  "regime_breadth_daily.csv 覆盖到 2026-11-04",
+  "后段 345 天里 close_sse / ma250_sse / dd250_sse / frac_above_ma20 / n_traded / B1_ratio_chg60 全部 345/345 非空",
+]
+root_cause = "build_regime_labels.py:360 的 st[beyond] = undefined_after_2025_05_30 无条件覆盖全部 5 个标签版本，且 bull_bear_defined 把后段 345 天全置 0；v1_benchmark_sse 的输入本来就齐"
+parent_spec_wording_erratum = "v0.1 规格 undefined_reason = 「万得全A 日线止于 2025-05-30」措辞误导，应读作「特定代理 CSV 结束 + 无条件截断」，不是行情不可得。v0.1 文件本身不修改"
+audit_evidence = "outputs/regime_v03_benchmark_extension_audit.json / regime_v03_benchmark_candidates.csv / src/regime_check/audit_benchmark_extension.py"
+
+[benchmark_continuation]
+CUTOFF = "2025-05-30"
+front_segment = "d <= 2025-05-30：一字不动沿用 xy_wind_all_a_daily.csv 的 close（2223.24 .. 5074.29），包括 MA250 / DD250 / bias / RSI / pct750 / legacy 等所有派生量"
+extension_segment = "d > 2025-05-30：用 Gate 0 已冻结的市场基准口径的日收益续接"
+gate0_convention = "上证综指 000001 与深证成指 399001 的日简单收益每日等权后链式合成，不直接平均点位（用户 2026-11-06 已确认）"
+formula = "r_g0(d) = 0.5 * [P_000001(d)/P_000001(d-1) - 1] + 0.5 * [P_399001(d)/P_399001(d-1) - 1]；close_v04(CUTOFF) = 5074.29；close_v04(d) = close_v04(d-1) * (1 + r_g0(d))"
+anchor = 5074.29
+why_not_equity_composite = "个股等权横截面中位数链式合成与万得全A重叠期日收益 Pearson 0.9299，但累计倍数 0.0022 vs 2.2824、MA250 上方一致率仅 0.4202（低于抛硬币）；不复权 close + 等权中位数 != 市值加权全A，趋势层不可用。要替代需市值加权 + 公司行动复权 + PIT 成分，本版不做"
+why_gate0 = "重叠期日收益 Pearson 0.9811 / Spearman 0.9773 / MA250 上方一致率 0.9184，覆盖后段 345/345 天；且是用户已确认的冻结口径"
+mixed_window_disclosure = "拼接点之后 250 个交易日内的 MA250 与 DD250 窗口混合了前段 wind 收益与后段 Gate0 收益。必须逐日披露混合标记 mixed_ma250_window，且在全网格里另报一个排除这 250 天的敏感性读数，不得隐去"
+no_level_jump = "续接以 5074.29 为锚，拼接点不产生点位跳变；验收须核对 close_v04 在 2025-06-03 的日收益等于 r_g0(2025-06-03)"
+
+[label_rules]
+script = "src/regime_check/build_v04_labels.py（新建，import 冻结脚本的纯函数，规则逐行移植；build_regime_labels.py 本身不修改）"
+single_change = "仅两处改动：close_wa 换成 close_v04；final_state 删去 st[beyond] = undefined_after 的一刀切"
+unchanged = [
+  "三层牛熊/模糊带规则与全部阈值（MA250、斜率、DD 15%/20%、2/3 满足、成交额代理、legacy 5% 触发）",
+  "5 个标签版本 v0_primary / v1_benchmark_sse / v2_B2 / v3_C2 / v4_legacy5pct",
+  "危机标签 17 段 / 16 可用 / 270 日，冻结文件 xy_crisis_events.csv 不重算",
+  "D3 用户拍板排除 event 3 (2016-02-17) 与 event 16 (2024-12-12)，主判据仍为 14 事件；排除理由用户未给，助手不代拟",
+  "危机前窗口 pre5/pre10/pre20 由 14 个纳入起点重建，pre10=140 日为 J2 主读数",
+  "放量缩量分型、overheat / oversold 附加标签、bear_in_crisis",
+  "PE 与融资余额本地不可得、换手率用成交额代理，2/3 规则仍属降级实现",
+]
+front_segment_bitwise_identical = "<= 2025-05-30 的全部 55 列强制从 v0.1 冻结标签逐位复制。原因：legacy_recovered / legacy_bearish 含向前看 10 日的逻辑，续接后段价格会污染前段最后 10 天；强制复制可保证『前段一字不动』硬承诺"
+bull_bear_defined_after = "后段 345 天置 1；前段保持 v0.1 原值（含 warmup 269 天仍为 1，warmup 由 l1 warm 判定）"
+new_columns = ["benchmark_source", "extension_day", "mixed_ma250_window", "r_g0_daily"]
+
+[acceptance]
+file = "outputs/regime_v04_label_acceptance.json"
+must_pass = [
+  "前段 55 列与 v0.1 逐位一致，差异格 0",
+  "后段 345 天 close_wind 无空值、5 个标签版本无 undefined_after_2025_05_30",
+  "后段 345 天 crisis_in=0、pre20_judged=0（保证危机组不变）",
+  "normal 基线由 2450 变为 2795（+345），用 v0.3 重建的 14 事件 pre20 口径，禁止用冻结 16 事件 pre20（会得 2419）",
+  "拼接点无跳变：close_v04(2025-06-03)/5074.29 - 1 == r_g0(2025-06-03)",
+  "两次重跑 CSV 逐位一致",
+]
+no_bootstrap_at_label_stage = true
+
+[amendment_2026_11_09_label_stage]
+status = "登记于标签阶段验收之后、任何 v0.4 bootstrap / 显著性 / 判定之前"
+label_acceptance = "outputs/regime_v04_label_acceptance.json，8 项检查全通过；两次重跑 CSV sha256 逐位一致"
+front_segment = "2994 天 × 55 列逐位复制 v0.1，差异格 0；续接基准前段与原 wind_all_a 逐点差 0（2994/2994 非空）"
+after_nonbenchmark_columns = "后段 345 天的 close_sse / ma250_sse / dd250_sse / frac_above_ma20 / n_traded / B1 / B2 / C1 / C2 / crisis_in / crisis_in_usable / pre5 / pre10 / pre20 与 v0.1 后段逐位一致（各 0/345 差异），证明只有基准及其派生量变了"
+splice = "2025-05-30 5074.29 -> 2025-06-03 5089.451783，日收益 0.002987961515 = r_g0 同日值，无点位跳变"
+mixed_window = "拼接后 250 个交易日 mixed_ma250_window=1，MA250 / DD250 混合两套收益来源"
+after_state_counts = "v0_primary 后段 bull 289 / bear 10 / bear_turn 46（粗化 bull 289 / bear 56 / fuzzy 0）；v1 bull 275 / bear_turn 66 / fuzzy 4；v2、v3 同 v0；v4_legacy5pct bull 289 / bear 10 / fuzzy 46"
+WARNING_third_layer_mechanical = "⚠️ 后段 345 天里 overheat=283 日、oversold=54 日，而 v0.1 后段因 close_wa 为 NaN 几乎全 0。续接基准是链式合成，其长期水平与万得全A 不同（重叠期累计倍数 1.2943 vs 2.2824），pct750 / bias250_z60 / RSI 等第三层附加标签在后段会机械性落在高位，属基准拼接的构造性伴随，不是市场真实过热/超冷"
+wide_table_does_not_carry_them = "⚠️ 核实后更正：v0.3 宽表 regime_v03_split_wide.csv 的 67 列里没有 overheat / oversold 两列，build_masks() 用 Lb.get(..., zeros) 兜底，故 v0.3 全网格中这两组各 695 格全部 n_a=0 / degenerate。v0.4 沿用完全相同的 67 列结构（保证 8340 格逐格可比），因此该机械偏差只存在于标签文件层面，不进入任何格子、不影响任何判定"
+pre_existing_v0_3_defect = "v0.3 的 overheat / oversold 两组为空掩码属既有缺陷，本版不修、不追正、不借机补列改网格结构，只登记在案；若将来要修须另行独立升版"
+disclosure_rule = "报告必须登记上述既有缺陷与机械偏差；v0.4 不得把 overheat / oversold 加入有效状态组，不得因这两组新增标签而增加网格行数"
+unchanged_groups = "crisis_in / pre5 / pre10 / pre20 / bear_in_crisis 后段均为 0 天，危机相关分组完全不变；唯一变化来自 normal 基线 2450 -> 2795 与牛熊/放量缩量/附加标签组的新增样本"
+no_verdict_seen = true
+
+[statistics_frozen_from_v0_3]
+bootstrap = "20 日 circular block bootstrap × 1000，双侧 percentile 95% CI"
+correction = "Bonferroni(12)，alpha = 0.05/12 = 0.004166666..."
+sig_rule = "非退化 + p_raw < 0.0041667 且 CI 不含 0，两道闸门同时过"
+primary_readout = "事件级去重：14 个起点每事件 1 个值；日级 214 天并列披露但单独显著不计支持"
+support_rule = "事件级显著 + p16/p27 事件方向一致 + 日级方向不矛盾"
+verdict_levels = ["支持", "矛盾", "无法判定（含数据不足）"]
+all_insignificant = "全不显著判『无法判定（含数据不足）』，不得判『矛盾』；方向事先未预设"
+sub_rng = "每格用 sub_rng(SEED, 稳定标签) 独立派生确定性种子，SEED=20261108"
+grid = "全网格 8340 行结构不变（line × panel × window × state × summary × 5 版本），逐格给 p_raw / p_bonferroni_pass / ci_lo / ci_hi / ci_crosses_zero / delta / std_effect / degenerate"
+J1_J2_J3_J4 = "沿用 v0.3 定义，不因重算一次而放宽"
+conjecture_rules = "14 条推测沿用 config/regime_split_check_v0.3.toml [stage2d_conjecture_rules_archived_2026_11_09] 冻结文本"
+version_invariant = "5 个标签版本对危机类命题平凡不变，不算 5 次独立重复；此性质在 v0.4 仍成立，须继续登记"
+no_naive_t = true
+
+[side_by_side_disclosure]
+mandatory = true
+join_key = ["version", "line", "panel", "window", "state", "summary"]
+report = [
+  "v0.3 与 v0.4 的 8340 格逐格并列：delta / CI / p_raw / 双闸门结论 / 方向",
+  "判定变化清单：主判据 J1/J2、14 条推测、停止门槛、显著格数量与分布",
+  "normal 基线 2450 -> 2795 的影响单独归因；不得把差异笼统说成『补了 345 天』",
+  "等价性自检读数：真数据全程无混合 MA250 窗口，第二遍应清空 0 天且与主版逐位一致；须写明『无混合窗口，两遍一致』，不得写成『排除敏感性后的结果』",
+  "披露第三层附加标签归因更正（ERRATUM_attribution）与其不进网格的事实",
+  "不得隐藏 v0.3 的否定结果，不得只报 v0.4",
+]
+if_no_change = "若 v0.4 与 v0.3 判定一致，写『补齐 345 天未改变结论』，不写『验证了 TDA 无效』"
+
+[stop_threshold]
+unchanged_from_v0_3 = true
+operational = "两线主判据均判『矛盾』或『无法判定』-> 记为在 w=10、当前行业价格数据、当前牛熊/危机标签下未检出"
+wording_ban = "不得写成『TDA 对 A 股做不到 / TDA 对 A 股危机预警无效』的全称外推"
+no_post_hoc = "禁止事后换窗口、模型、特征、阈值、摘要、标签或状态划分追正；v0.4 是本轮唯一一次由数据缺陷触发的重算，不得再以『再补一段数据』为由第三次重算。2026-11-09 从 Gate0 续接改为真 Wind 数据，发生在任何 v0.4 判定执行之前，属同一次重算内的口径修正，不计为第二次重算；判定一旦执行即冻结，不得再改基准"
+
+[boundary]
+performance = false
+ic_or_sharpe = false
+position_or_weights = false
+pr_auc = false
+gate1_2025_final_test = false
+gate2 = false
+phti_formal_backtest = false
+overwrite_v0_1_v0_2_v0_3 = false
+modify_study_toml = false
+note = "Gate 1 封存的 2025 最终测试集仍未读取；Gate 1 暂停、Gate 2 未启动、PHTI 正式绩效未运行。全部样本内描述性对账，不加载股指收益评分。v0.4 只是补齐状态标签的定义范围，不把 2025-06 之后的数据用于任何训练/校准/调参/评分"
+
+[outputs_expected]
+labels = "outputs/regime_daily_labels_v04.csv"
+labels_meta = "outputs/regime_labels_meta_v04.json"
+acceptance = "outputs/regime_v04_label_acceptance.json"
+verdicts = "outputs/regime_v04_verdicts.json"
+grid = "outputs/regime_v04_grid.csv"
+side_by_side = "outputs/regime_v04_vs_v03_side_by_side.csv"
+report = "outputs/regime_v04_extension_report.html"
+ledger = "outputs/regime_v04_conclusion_ledger.csv"
+scripts = ["src/regime_check/import_wind_extension.py", "src/regime_check/build_v04_labels.py", "src/regime_check/verify_v04_extension.py", "src/regime_check/build_v04_report.py"]
+
+# =====================================================================
+# OPTION A AMENDMENT — 2026-11-09, user explicitly chose "A"
+# =====================================================================
+[amendment_2026_11_09_option_A_real_wind]
+status = "ACTIVE SPEC FOR v0.4 / still DRAFT_PENDING_USER_CONFIRMATION for the JUDGEMENT RUN"
+registered_at = "2026-11-09, BEFORE any v0.4 bootstrap / significance / verdict"
+trigger = "用户追问『万得全A日线是查不到还是什么别的原因，后面的没有？』→ 查明 2026-11-07 那次 get_index_kline 显式传 end_date='2025-05-30'（对齐兴业研报 2015/07—2025/05 报告期），end_date 是接口必填项，不是数据源断供"
+user_decision = "用户在 A(改真数据重做 v0.4) / B(维持 Gate0 续接只修措辞) / C(仅落盘存档) 中选 A。助手承诺『先写修订规格、做完工程验收，判定仍不跑，等确认』"
+no_verdict_seen_yet = true
+V04_CONFIRMED_switch_still_closed = true
+
+[amendment_2026_11_09_option_A_real_wind.superseded]
+sections = ["[benchmark_continuation]", "[amendment_2026_11_09_label_stage] 中与 Gate0 续接、混合 MA250 窗口、overheat 机械偏差有关的描述"]
+handling = "原文全部保留作审计留痕，但不再作为 v0.4 的主口径；Gate0 续接方案整体作废，不得再用于生成判定产物"
+why = "真 881001.WI 日线可从同一 Wind 连接器完整取回，用代理续接没有必要；用户已拍板。注意：上一版把『代理续接会引入构造性偏差』说得过重，实测两版后段走势只差约 1%、第三层标签只差 6 天，见 [amendment_2026_11_09_option_A_real_wind.benchmark_convention].ERRATUM_attribution"
+correction_to_prior_warning = "WARNING_third_layer_mechanical 的『不是市场真实过热』结论已被实测推翻，须以 ERRATUM_attribution 为准；原段落不删，保留作错误归因的审计留痕"
+
+[amendment_2026_11_09_option_A_real_wind.real_wind_data]
+source = "Wind Alice MCP get_index_kline(881001.WI, 2025-05-30..2026-11-04, period=10, count=0)"
+connector_status = "wind-finance connected / bound=true / enabled=true (checked 2026-11-09)"
+raw_snapshot = "third_party/wind/881001WI_day_20250530_20261104.json"
+raw_bytes = 54569
+raw_sha256 = "e40b4e8c670b8881… (full value in outputs/xy_wind_all_a_daily_v04_audit.json)"
+extraction = "verbatim tool response recovered from the session JSONL by src/regime_check/import_wind_extension.py; no manual transcription"
+front_file = "outputs/xy_wind_all_a_daily.csv (3012 rows, 2012-12-31..2025-05-30, bitwise unchanged)"
+extension_file = "outputs/xy_wind_all_a_daily_extension.csv (347 rows, 2025-06-03..2026-11-04)"
+full_file = "outputs/xy_wind_all_a_daily_v04_full.csv (3359 rows)"
+audit_file = "outputs/xy_wind_all_a_daily_v04_audit.json"
+splice_point = "2025-05-30 open/close/high/low 与冻结前段逐值差 0（max_abs_diff=0.0），全程同一个 881001.WI 序列，无锚定、无收益率换算、无点位跳变"
+calendar_alignment = "后段 345 个标签日 100% 有真实价格；Wind 多出 2026-10-15 / 2026-11-04 两个无完整申万行业面板的交易日，沿用 v0.1 既有规则忽略"
+data_quality_note = "同一连接器跨次查询存在微小修订：早前 2026-10-01..11-04 探测返回 2026-10-12 close 6018.66，本次全区间返回 6019.02（0.36 点 / 0.006%）。以本次全区间返回为冻结快照，差异登记、不追溯修改"
+front_not_refreshed = "前段 3012 行不重新查询、不改写；即便连接器当前值与旧快照有微差也以前段冻结值为准，保证 v0.3 前段可比"
+
+[amendment_2026_11_09_option_A_real_wind.benchmark_convention]
+primary = "全程单一真实序列：d <= 2025-05-30 用冻结前段，d > 2025-05-30 用同一次连接器返回的 881001.WI 真实 OHLC 直接拼接"
+no_gate0 = "不再计算 r_g0、不再用 000001+399001 等权收益链式合成、不再锚定 5074.29 换算"
+no_mixed_window = "全程同一收益来源，MA250 / DD250 / pct750 / bias_z / RSI 不存在混合两套收益的窗口；mixed_ma250_window 列保留但恒为 0"
+third_layer = "第三层附加标签仍不进入 8340 格（v0.3 宽表 67 列不含这两列，v0.4 沿用相同结构）。实测后段真数据版 overheat=279 / oversold=53，Gate0 版 283 / 54，仅 6 天差异"
+ERRATUM_attribution = "⚠️ 推翻 [amendment_2026_11_09_label_stage].WARNING_third_layer_mechanical 的归因：那 283 天并非『链式水平漂移造成的机械伪影、不是市场真实过热』。真数据版没有链式拼接，仍 279 天触发，且两版基准在后段走势只差约 1%。主因是 oh4 = pct750 > 0.90（750 日滚动 midrank 分位）：2025-07..2026-05 是真实单边上行（5074.29 → 2026-05-29 约 6927，+36.5%），收盘价几乎天天落在自身过去 750 日的前 10%；2026-07 回撤后 overheat 下降、oversold 上升（2026-07: 11/16，2026-10: 4/15），与行情一致。正确登记为『第三层附加标签在趋势市里几乎恒触发、区分度低』的口径局限，而不是数据伪影；该推断只作描述性披露，不进网格、不改任何判定"
+
+[amendment_2026_11_09_option_A_real_wind.unchanged_from_v0_3]
+items = [
+  "三层牛熊/模糊带规则与全部阈值、5 个标签版本、危机标签与 D3 排除 (3,16)、14 事件、pre10=140",
+  "统计口径：20 日 circular block bootstrap × 1000、Bonferroni(12)=0.0041667、双闸门、事件级去重主读数、三档判定、sub_rng 独立确定性种子",
+  "全网格 8340 行结构与 67 列宽表结构（保证逐格可比）",
+  "J1/J2/J3/J4、14 条推测判定文本、停止门槛与措辞禁令",
+  "v0.1 / v0.2 / v0.3 全部产物不覆盖、不回改、不重新解释",
+  "边界：performance / ic_or_sharpe / position / pr_auc / gate1_2025_final_test / gate2 / phti_formal_backtest / modify_study_toml 全部 false",
+]
+single_change = "仅把『2025-05-30 后 345 天的基准与状态定义』从『未定义 / Gate0 代理续接』改为『真实 881001.WI 日线 + 解除无条件截断』；其余一律不动"
+normal_baseline = "v0.3 的 2450 → v0.4 的 2795（+345）。后段 crisis_in=0 / pre20_judged=0，危机组与危机前组完全不变；唯一变化是所有格子共用的 normal 对照组与牛熊/附加标签组新增样本"
+not_post_hoc = "本改动由数据缺陷触发且在看到任何 v0.4 结果之前冻结；从 Gate0 版换成真数据版是同一缺陷的第二次修正，不新增实验自由度、不按结果反选"
+
+[amendment_2026_11_09_option_A_real_wind.sensitivity_redefined]
+old = "原规格要求另跑『排除 250 日混合 MA250 窗口』敏感性"
+new = "真数据全程无混合窗口，mixed_ma250_window 恒 0，故 drop_mixed 第二遍应清空 0 天、与主版逐位一致。保留该第二遍，重新定义为『无混合窗口的等价性与确定性自检』；若 cleared != 0 或两遍不逐位一致，判定脚本必须报错"
+report_wording = "并列报告里不得把它写成『排除了混合窗口的敏感性结果』，须写『等价性自检：无混合窗口，两遍一致』"
+
+[amendment_2026_11_09_option_A_real_wind.side_by_side]
+mandatory = true
+content = "v0.3 冻结判定 / v0.4-A 判定逐格并列，外加 v0.3 与 Gate0 版标签的状态计数对照（仅描述，不重跑 Gate0 判定）"
+wording_if_unchanged = "只能写『补齐 345 天真实行情未改变结论』，不得写『验证了 TDA 无效』或任何全称外推"
+stop_threshold_unchanged = "仍以两线主判据是否检出为准；不得写成『TDA 对 A 股做不到 / TDA 对 A 股危机预警无效』"
+
+[amendment_2026_11_09_option_A_real_wind.run_gate]
+condition = "用户明确确认本修订规格后，才设 V04_CONFIRMED=1 执行判定"
+still_not_done = "本轮只完成：真数据取回与落盘、规格修订、标签重建与前段不变验收、判定脚本静态核验。没有跑任何 bootstrap、没有生成 v0.4 grid / verdicts / 报告"
+report_script = "src/regime_check/build_v04_report.py 留到确认后与判定一起生成并当场校验，避免交付未经运行的展示层代码"
+gate0_artifacts_preserved = "outputs/regime_daily_labels_v04_gate0_superseded.csv / regime_labels_meta_v04_gate0_superseded.json / regime_v04_label_acceptance_gate0_superseded.json 为被取代版本的留痕，不作判定依据"
+boundary_note = "取回的 881001.WI 是公开指数行情，用于牛熊状态标签定义；不是 Gate 1 封存的 2025 模型评分数据集（特征/标签/评分表），后者仍未读取"
+
+# =====================================================================
+# CONFIRMATION — 2026-11-09 11:31 GMT+8，用户回复「确认」
+# 登记于设置 V04_CONFIRMED=1 并执行任何 v0.4 bootstrap 之前
+# =====================================================================
+[confirmation_2026_11_09]
+user_reply_verbatim = "确认"
+confirmed_at = "2026-11-09 11:31 GMT+8"
+confirmed_items = [
+  "后段用真 881001.WI 日线直接拼接，前段 2994 天沿用已验收的同一序列、不重取",
+  "全程单一序列，无混合 MA250 窗口；第二遍判定改为等价性/确定性自检并带硬断言",
+  "判定口径（三层规则 / 5 版本 / D3 排除(3,16) / 14 事件 / 8340 格 / 区块自助 B=1000 / Bonferroni(12) / 双闸门 / 事件级主读数 / 三档判定 / 停止门槛）一字不改",
+  "判定一跑即冻结，不再以补数据为由改基准或第三次重算",
+]
+assistant_action = "把 status 从 DRAFT_PENDING_USER_CONFIRMATION 改为 ACTIVE_CONFIRMED_2026_11_09，然后设 V04_CONFIRMED=1 执行 verify_v04_extension.py；不改动任何已冻结的统计规则"
+not_confirmed = ["不启动 Gate 1 封存 2025 模型评分数据集读取", "不启动 Gate 2", "不跑 PHTI 正式绩效回测", "不按结果反选窗口/阈值/摘要/标签/状态划分"]
+note = "本段写于跑判定之前；判定结果出来后另在 [judgement_run_2026_11_09] 登记，不回改本段"
+old_fields_preserved = "[amendment_2026_11_09_option_A_real_wind].no_verdict_seen_yet = true 与 V04_CONFIRMED_switch_still_closed = true 记录的是规格修订落盘时的事实，保留原值作留痕；执行后的状态以本段与下段为准"
+
+# =====================================================================
+# JUDGEMENT RUN — 2026-11-09，登记于判定执行完毕之后（不回改以上预登记）
+# =====================================================================
+[judgement_run_2026_11_09]
+executed_at = "2026-11-09 11:34–11:37 GMT+8"
+command = "V04_CONFIRMED=1 python src/regime_check/verify_v04_extension.py"
+engine = "verify_v03_split.main() 原封调用两遍，仅重定向 OUT/CFG 与替换宽表 14 个标签列"
+determinism = "两次重跑 stdout / grid / verdicts / side_by_side / compare_summary 的 sha256 全部逐位一致"
+equivalence_selfcheck_passed = true
+equivalence_days_cleared = 0
+equivalence_grid_bytes_identical = true
+grid_rows = 8340
+normal_baseline = "v0.3 2450 -> v0.4 2795（+345，keypack 唯一改变的键）"
+crisis_in_daily_n = 214
+primary_A = "无法判定（含数据不足）"
+primary_B = "无法判定（含数据不足）"
+J2_pre10_sig_cells = "A 0 / B 0"
+main_state_sig_cells = "v0.3 0 -> v0.4 0（crisis_in/pre5/pre10/pre20/bear_in_crisis）"
+sig_cells_all_grid = "v0.3 151 -> v0.4 171；全部落在 bear/pre_low_vol/pre_high_vol/bull/fuzzy"
+side_by_side = "8340 行逐格并列；delta 改变 5999 格、显著判定翻转 90 格（新增 55 / 消失 35），无一落在危机主状态"
+conjecture_counts = "5 支持 / 0 矛盾 / 9 无法判定；14 条逐条判定零变化"
+stop_threshold = "两线主判据均未检出（与 v0.3 一致）"
+conclusion_wording = "补齐 345 天真实行情未改变 v0.3 结论；不得写成验证了 TDA 无效或任何全称外推"
+pseudo_significance_disclosure = "v0.4 p_raw 单列通过 847 格、双闸门后 171；主状态 p 通过 335 格中 300 格为 delta=0 退化伪显著、335 格 CI 全含 0，故主状态双闸门为 0"
+third_layer_erratum = "真数据版 overheat 279/345、Gate0 版 283/345，只差 6 天；归因更正为『第三层附加标签在趋势市几乎恒触发、区分度低』，两组仍不进 8340 格"
+outputs = ["outputs/regime_v04_grid.csv", "outputs/regime_v04_verdicts.json", "outputs/regime_v04_grid_equivalence_check.csv", "outputs/regime_v04_verdicts_equivalence_check.json", "outputs/regime_v04_vs_v03_side_by_side.csv", "outputs/regime_v04_compare_summary.json", "outputs/regime_v04_extension_report.html", "outputs/regime_v04_conclusion_ledger.csv"]
+report_html_validation = "HTMLParser 标签平衡校验：unclosed=[] / errors=[] / BALANCED"
+frozen_now = "判定已执行并冻结；不再以补数据为由改基准或第三次重算；v0.1/v0.2/v0.3 产物未覆盖"
+boundary_unchanged = "Gate 1 封存 2025 模型评分数据集未读取、Gate 2 未启动、PHTI 正式绩效未运行；无绩效/IC/夏普/PR-AUC/仓位；未改 config/study.toml"

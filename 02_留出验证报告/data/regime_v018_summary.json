@@ -1,0 +1,83 @@
+{
+ "protocol": "regime-sealed-validation-v0.18-2026-11-16",
+ "amendments": [
+  "a1 分账归因",
+  "a2 首响钳位双列",
+  "a3 冻结事件波及注记",
+  "a4 误报=两本账均无交集"
+ ],
+ "generated_at": "2026-11-16T23:09:17+08:00",
+ "validation_span": "2025-01-01..2026-11-03",
+ "product": {
+  "trigger": "S3 三中二（回撤换年线）",
+  "governance": "B10 纯静默·冷却十日",
+  "engine": "v0.12 判定机逐字同规则",
+  "tuned": false
+ },
+ "layers": {
+  "S3 触发层（选定）": {
+   "n_episodes_sealed": 13,
+   "hit_narrative": 3,
+   "hit_label": 3,
+   "n_false_episodes": 2,
+   "false_days_episodes": 6,
+   "false_days_outside_event_windows": 6,
+   "false_days_per_year_outside": 3.3,
+   "n_assoc_episodes": 6,
+   "assoc_days": 32,
+   "train_false_days_per_year": 9.9,
+   "alarm_days_total": 61,
+   "sealed_days": 442
+  },
+  "REF8 实用候选（对照）": {
+   "n_episodes_sealed": 54,
+   "hit_narrative": 3,
+   "hit_label": 3,
+   "n_false_episodes": 37,
+   "false_days_episodes": 62,
+   "false_days_outside_event_windows": 62,
+   "false_days_per_year_outside": 34.1,
+   "n_assoc_episodes": 11,
+   "assoc_days": 54,
+   "train_false_days_per_year": 61.6,
+   "alarm_days_total": 167,
+   "sealed_days": 442
+  },
+  "B10 消音链（选定）": {
+   "n_episodes_sealed": 8,
+   "hit_narrative": 3,
+   "hit_label": 3,
+   "n_false_episodes": 3,
+   "false_days_episodes": 36,
+   "false_days_outside_event_windows": 36,
+   "false_days_per_year_outside": 19.8,
+   "n_assoc_episodes": 1,
+   "assoc_days": 14,
+   "train_false_days_per_year": 29.9,
+   "alarm_days_total": 113,
+   "sealed_days": 442
+  },
+  "G0 无治理（对照）": {
+   "n_episodes_sealed": 15,
+   "hit_narrative": 3,
+   "hit_label": 3,
+   "n_false_episodes": 4,
+   "false_days_episodes": 23,
+   "false_days_outside_event_windows": 23,
+   "false_days_per_year_outside": 12.6,
+   "n_assoc_episodes": 6,
+   "assoc_days": 32,
+   "train_false_days_per_year": 28.2,
+   "alarm_days_total": 78,
+   "sealed_days": 442
+  }
+ },
+ "attribution_sha": "61799f5cbf82a828",
+ "false_alarm_sha": "fc0f817e5b39f053",
+ "caveats": [
+  "N3 仍在演化且被数据末日 2026-11-03 截断",
+  "2025-01-01..2025-04-07 波及冻结事件 16/17，非纯样本外",
+  "叙事背景为用户提供、未核验；评估锚只用万得全A与冻结产物",
+  "标签段先于本预登记算出（规则固定），已披露"
+ ]
+}

@@ -1,0 +1,218 @@
+{
+  "generated_at": "2026-11-22T14:33:13+08:00",
+  "version": "v0.33",
+  "pre_registration": "tda_project/config/regime_bench_rebuild_v0.33.toml",
+  "amendments": [
+    "amendment_1: 清洗判据改为仅按成交量（四价相同保留）"
+  ],
+  "raw": {
+    "file": "D:\\WorkBuddy\\2026-10-28-22-54-51\\tda_project\\outputs\\v033_wind_raw\\881001WI.json",
+    "sha256": "e0af61da462d874b601c7f848865ea4c526f29d582a483f97ce9c1d81532a587",
+    "rows": 6502,
+    "first": "1999-12-30",
+    "last": "2026-11-03",
+    "flat_rows": 9,
+    "bad_volume_rows": 0
+  },
+  "clean": {
+    "rows": 6502,
+    "dropped": 0,
+    "first_close": 1000.0,
+    "last_close": 5459.96
+  },
+  "gates": {
+    "G1_first_close_1000": true,
+    "G2_rows_6502": true,
+    "G3_overlap_days": 6483,
+    "G3_max_abs_close_diff": 0.7399999999997817,
+    "G3_pass_le_1pt": true,
+    "G4_missing19_all_present": true,
+    "G4_missing19_found": 19,
+    "G5_cal_days": 6502,
+    "G5_wind_not_in_cal": [],
+    "G5_cal_not_in_wind": [],
+    "G5_pass_empty_both": true,
+    "G6_abs_ret_gt15": [],
+    "G6_pass": true,
+    "G7_unique_ascending": true,
+    "flat9_all_kept": true
+  },
+  "hard_gates_passed": true,
+  "csv_roundtrip_ret_max_abs_diff": 4.999264890948041e-13,
+  "vs_old_bench": {
+    "old_rows": 6483,
+    "new_rows": 6502,
+    "delta_rows": 19,
+    "overlap_days": 6483,
+    "max_abs_close_diff": 0.7399999999997817,
+    "median_abs_close_diff": 0.0,
+    "days_diff_gt_0.01": 4,
+    "note": "旧 bench 为 front(3144)+back(3339) 拼接产物，与 Wind 单次全历史导出存在小数位级差异"
+  },
+  "missing19_detail": [
+    {
+      "date": "2015-07-15",
+      "new_close": 4711.85,
+      "prev_new": "2015-07-14",
+      "new_ret_pct": -5.2887,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2015-09-02",
+      "new_close": 3781.33,
+      "prev_new": "2015-09-01",
+      "new_ret_pct": -1.8145,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2015-11-27",
+      "new_close": 4672.18,
+      "prev_new": "2015-11-26",
+      "new_ret_pct": -6.422,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2016-04-18",
+      "new_close": 4143.9,
+      "prev_new": "2016-04-15",
+      "new_ret_pct": -1.5181,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2016-04-19",
+      "new_close": 4160.57,
+      "prev_new": "2016-04-18",
+      "new_ret_pct": 0.4023,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2016-07-04",
+      "new_close": 4178.96,
+      "prev_new": "2016-07-01",
+      "new_ret_pct": 1.8511,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2017-04-05",
+      "new_close": 4486.15,
+      "prev_new": "2017-03-31",
+      "new_ret_pct": 1.7438,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2017-07-21",
+      "new_close": 4362.34,
+      "prev_new": "2017-07-20",
+      "new_ret_pct": -0.1613,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2021-08-06",
+      "new_close": 5670.43,
+      "prev_new": "2021-08-05",
+      "new_ret_pct": -0.1676,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2021-10-08",
+      "new_close": 5701.25,
+      "prev_new": "2021-09-30",
+      "new_ret_pct": 0.7213,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2021-10-22",
+      "new_close": 5709.57,
+      "prev_new": "2021-10-21",
+      "new_ret_pct": -0.1647,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-03-03",
+      "new_close": 5489.14,
+      "prev_new": "2022-03-02",
+      "new_ret_pct": -0.5558,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-03-23",
+      "new_close": 5178.57,
+      "prev_new": "2022-03-22",
+      "new_ret_pct": 0.4709,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-03-31",
+      "new_close": 5095.61,
+      "prev_new": "2022-03-30",
+      "new_ret_pct": -0.7936,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-04-14",
+      "new_close": 4954.7,
+      "prev_new": "2022-04-13",
+      "new_ret_pct": 1.1793,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-05-05",
+      "new_close": 4641.73,
+      "prev_new": "2022-04-29",
+      "new_ret_pct": 0.671,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2022-05-09",
+      "new_close": 4558.07,
+      "prev_new": "2022-05-06",
+      "new_ret_pct": 0.2108,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2023-09-08",
+      "new_close": 4782.14,
+      "prev_new": "2023-09-07",
+      "new_ret_pct": -0.0923,
+      "old_prev": null,
+      "in_old": false
+    },
+    {
+      "date": "2026-10-15",
+      "new_close": 5787.54,
+      "prev_new": "2026-10-14",
+      "new_ret_pct": -2.2832,
+      "old_prev": null,
+      "in_old": false
+    }
+  ],
+  "s1_columns": "sse/szse/r_* 由旧 bench 按日对齐复制，19 天为空；S1 为 SUPERSEDED 敏感性对照，本版不重算",
+  "outputs": {
+    "regime_v033_benchmark_daily.csv": {
+      "rows": 6502,
+      "sha256": "4dad75f3211335a697ddf651b72c3271043d3268dd7fef9d6797ea8b694e8202"
+    }
+  },
+  "boundary": [
+    "数据层 only：本脚本不跑 S3、不跑 B10、不跑账本、不跑判定机",
+    "旧 bench 未修改、未删除",
+    "config/study.toml 未动；冻结标签与掩码未动"
+  ]
+}

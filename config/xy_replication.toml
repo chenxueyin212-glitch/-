@@ -1,0 +1,55 @@
+# 兴业证券《捕捉市场的形状》市场择时复现；与原Gate 1完全分离。
+[source]
+title = "捕捉市场的形状——拓扑数据分析在投资中的应用"
+authors = "郑兆磊、宫民"
+publisher = "兴业证券经济与金融研究院"
+published_at = "2025-07-08"
+public_fulltext_at = "2025-07-10"
+url = "https://news.10jqka.com.cn/20250710/c669527265.shtml"
+original_pdf_status = "not_obtained; public full text and original figures inspected"
+reported_backtest_start = "2015-07-01"
+reported_backtest_end = "2025-05-31"
+post_publication_start = "2025-07-09"
+
+[topology]
+lookback_returns = 30
+return_type = "simple_close_to_close"
+distance = "sqrt(2*(1-rho)); verified from original figure"
+max_edge = 2.0
+max_dim = 2
+coefficient_field = 2
+n_definition = "primary operational interpretation: number of finite H2 persistence intervals"
+signal_rule = "N <= 1"
+landscape_l1 = "exact integral sum((death-birth)^2/4), not a grid approximation"
+fixed_epsilon_sensitivity = [0.4, 0.6, 0.8]
+
+[universe]
+classification = "SW second-level snapshot from akshare sw_index_second_info on 2026-11-07"
+expected_codes = 131
+expected_active_codes_through_report_end = 124
+membership_rule = "exclude series ending before 2025-05-31 (7 discontinued codes); at each date include remaining codes with 31 valid closes for 30 returns; do not backfill missing histories"
+price_source = "swsresearch.com/institute-sw/api/index_publish/trend/ public frontend JSON"
+benchmark_code = "801003"
+benchmark_name = "申万A指"
+benchmark_status = "proxy only; Wind All A history unavailable from connected sources"
+
+[execution]
+raw_signal_time = "after close t using closes through t"
+report_window = "close-to-close returns t+1 through t+4; signal-window comparison, not claimed executable"
+causal_window = "enter at open t+1 and exit at open t+5; four open-to-open returns"
+hold_days = 4
+cost_per_side = 0.001
+annualization_days = 244
+
+[controls]
+fit_start = "2012-12-31"
+fit_end = "2015-06-30"
+evaluation_start = "2015-07-01"
+high_quantile = 0.95
+low_quantile = 0.05
+variables = ["industry_average_correlation", "correlation_leading_eigenvalue_share", "market_return_30", "market_realized_volatility_30", "h2_landscape_l1"]
+
+[audit]
+report_cited_periods = ["2020-03", "2022-04", "2024-02", "2025-01"]
+transition_excluded_from_post = "2025-06-01 through 2025-07-08; separates report sample and post-publication period"
+gate1_status = "paused; no Gate 1 configuration, features or scores are used here"

@@ -1,0 +1,136 @@
+# v0.30 · a 腿行业坐标统一（申万一级 31 行业，Wind 回溯补齐）
+# 预登记时间：2026-11-22 13:12（**早于任何取数与计算**）
+# 性质：坐标同步重算（不是新假设、不是策略评估、不产生新的绩效主张）
+# 目的：把 a 腿从「锁死 2005 版 16 行业」改为「31 行业单一坐标、全历史无断点」，
+#       消除 v0.28 实测出的「a 腿为历史可比性放弃覆盖度、b 腿为覆盖度放弃一致性」的不对称。
+#
+# 与既有结论的关系：
+#   - 不修改 v0.19—v0.22 任何产物；主结果仍用方案一（7 项 4 票、45/45、+79.0）。
+#   - 本版若与主结果冲突，**以主结果为准**，本版只作为「坐标敏感性」披露。
+#   - 2026 已被 v0.25/v0.26 反复读取，本版不得把 2026 当样本外，只作事后描述。
+#   - 禁止事后调整窗口、收益口径、分位、票数门槛以追正；门槛不因结果修改。
+
+[protocol]
+version = "v0.30-2026-11-22"
+status = "preregistered_before_any_fetch_or_compute"
+prior = ["v0.28 (B 分位映射失败 / A 段内标定失败，均因本地无一级回溯数据)",
+         "v0.29 (b 腿统一代码体系，已完成，本地库自带 2021 版二级回溯)"]
+why_a_leg_was_not_done_in_v029 = """
+v0.29 只换 b 腿，原因是数据可换性不同：
+  b 腿：本地 xy_replication_data.db 已含 2021 版二级行业 1999 起回溯 → 纯重算；
+  a 腿：本地 sw_industry_daily 中 801710—801790/801880/801890/801950 起于 2014-02-21，
+        801960/801970/801980 起于 2021-12-13，本地无回溯 → 必须先补历史。
+本版用 Wind 申万一级指数回溯补齐，属 v0.29 的同一逻辑延伸到 a 腿。
+"""
+
+[data]
+source = "Wind 申万一级行业指数（.SI），经 wind-finance MCP get_index_kline 取日 K"
+wind_codes = ["801710.SI", "801720.SI", "801730.SI", "801740.SI", "801750.SI",
+              "801760.SI", "801770.SI", "801780.SI", "801790.SI", "801880.SI",
+              "801890.SI", "801950.SI", "801960.SI", "801970.SI", "801980.SI"]
+local_codes = [c.replace(".SI", "") for c in wind_codes]
+price_field = "MATCH"          # Wind 返回的收盘点位
+begin = "1999-12-30"
+end = "2026-11-03"
+period = "10"                  # 日 K
+# 落地位置：新库，不改 tdx_central.db，不写 sw_industry_daily
+out_db = "a_share_pit/sw_industry_wind_backfill.db"
+out_table = "sw_industry_daily_wind"
+raw_dir = "tda_project/outputs/v030_wind_raw"
+# 已知坑（v0.29 实测）：非交易日会返回四价相同的填充行，TIME 偏移 +02:15，量为空 → 必须过滤
+fill_row_rule = "drop rows where OPEN==HIGH==LOW==MATCH or VOLUME empty"
+
+[admission_gate]
+# 回溯数据能否使用，先过这一关；不过关不进入重算
+overlap_check = "Wind close 与本地 sw_industry_daily 在重叠期逐值比对（相对误差）"
+overlap_window_2014 = ["2014-02-21", "2026-11-03"]   # 对 13 个 2014 版代码
+overlap_window_2021 = ["2021-12-13", "2026-11-03"]   # 对 4 个 2021 版代码
+max_rel_err = 1e-6
+min_overlap_days = 200
+fail_policy = "单个代码超差则该代码退出并记录；退出数 ≥3 则整版中止，不出结论"
+
+[panel]
+key = "p31"
+role = "unified_coordinate_full_history"
+n_industries = 31
+codes = ["801010", "801030", "801040", "801050", "801080", "801110",
+         "801120", "801130", "801140", "801150", "801160", "801170",
+         "801180", "801200", "801210", "801230", "801710", "801720",
+         "801730", "801740", "801750", "801760", "801770", "801780",
+         "801790", "801880", "801890", "801950", "801960", "801970", "801980"]
+start = "1999-12-30"
+# 说明：p16 的 16 个行业在 31 个之中；本版不删任何行业，全部保留，避免又一次"按结果选坐标"
+composition_rule = "p16 ⊂ p31，全保留，不剔除、不加权"
+
+[features]
+# 与 v0.3（regime_v03_phti_p16_w10.csv）逐字一致的算法，只换坐标数
+window = 10                    # 点 = 交易日，10 个点，坐标 = 31 个行业
+input = "daily_log_return"
+metric = "euclidean"
+complex_type = "Vietoris-Rips"
+maxdim = 1
+coeff = 2
+wasserstein_order = 2
+internal_norm = "L_inf"
+combine_dimensions = "sum_wasserstein_per_dimension"
+# 进入七票/十票的 a 腿特征（其余列一并输出但不用于投票）
+voted_features = ["avg_pair_corr", "leading_eig_share", "W_t", "h0_death_mean", "h1_count"]
+# 自检：a16 重算必须逐值复现 regime_v03_phti_p16_w10.csv，否则视为实现漂移，中止
+self_check = {"ref": "regime_v03_phti_p16_w10.csv", "tol": 1e-10,
+              "on_fail": "abort_before_producing_any_conclusion"}
+
+[comparison]
+# 判定层参数完全沿用 v0.19，不得改
+vote_features_7 = 7
+vote_features_10 = 10
+extreme_pct = 0.85
+hist_window = 756
+hist_min_obs = 120
+vote_thresholds = [4, 5, 6]
+pre_window = 20
+post_window = 20
+primary = "F7K4 (7 项 4 票) 与 F10K6 (C1 10 项 6 票) 两臂各自对账"
+report_items = ["2026 全年票数分布与 ≥4 票天数",
+                "三场 2026 危机窗内最高票数",
+                "45 事件识别/漏报/提前/窗内",
+                "两段污染窗口 9 个事件的触发日变化",
+                "a16 与 a31 的特征相关与极端判定一致率"]
+
+[stopping_rules]
+- "admission_gate 未过 → 结论写「回溯数据不可用」，不进入重算"
+- "self_check 未过 → 结论写「实现漂移」，不进入对账"
+- "a31 与 a16 的极端判定一致率 ≥0.95 → 记录「换坐标无实质影响」，不追加变体"
+- "a31 与 a16 的极端判定一致率 <0.80 → 记录「换坐标改变判定实质」，产品不切换，只作披露"
+- "无论结果方向，不得回头调整 window/分位/票数；如需变体须另立 v0.31 预登记"
+
+[prohibitions]
+- "不得用本版结果替换论文主结果（45/45、24/7/14、31/45、19/45、23.4%、+79.0）"
+- "不得把 2026 当样本外"
+- "不得因 a31 更好看就回改 v0.29 的 b 腿选择"
+- "不得在未过 admission_gate 时用 801003 等宽基替代申万一级行业指数"
+
+# ---------------------------------------------------------------------------
+# 修订 1（2026-11-22 13:26，**在任何判定/票数结果产生之前**写入）
+# 触发原因：原判据「水平值相对误差 ≤1e-6」过严且判错了对象。面板的输入是**日对数收益**，
+# 水平刻度（基期归一）不影响相关阵与持续同调；实测 15 个代码中 14 个水平比恒为 1.000000，
+# 但四舍五入使水平相对误差达 1e-6—7e-5，按原判据会误杀。
+# ---------------------------------------------------------------------------
+[admission_gate.amendment_1]
+written_at = "2026-11-22T13:26+08:00"
+before_any_vote_computation = true
+new_primary_criterion = "重叠期日对数收益最大绝对差 ≤ 1e-3"
+level_check_role = "仅作旁证：水平比中位须落在 [0.9999, 1.0001]"
+rationale = "拓扑输入为日对数收益，水平基期无关；用收益差判等才与下游一致"
+measured = "14/15 代码收益最大差 ≤ 7.2e-5；1 个代码（801950 煤炭）达 1.41e-1"
+
+[[admission_gate.amendment_1.special_case]]
+code = "801950"
+finding = """
+Wind 801950.SI 与本地 801950 在 2016 年起比值恒为 1.0000（完全同一条序列），
+差异只在 2014-02-21—2015-12-31：本地该段与国防军工(801740)相关 0.949，
+Wind 该段与采掘(801020)相关 0.977。煤炭属采掘子集，Wind 侧符合行业常识；
+判定为**本地库该段数据缺陷**，不是 Wind 回溯问题。
+"""
+decision = "801950 全程采用 Wind 回溯序列，并在产物中标注 local_defect_2014_2015"
+impact_on_frozen = "无。801950 不在 p16/p27，只出现在 p31，v0.19—v0.22 从未使用该代码"
+

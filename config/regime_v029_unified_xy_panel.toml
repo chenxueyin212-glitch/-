@@ -1,0 +1,91 @@
+# v0.29 行业相关点云统一代码体系重建（预登记）
+# 写于任何 v0.29 结果计算之前。本文件一旦写入，参数不因结果调整。
+
+[meta]
+version = "0.29"
+name = "unified_xy_panel"
+written_at = "2026-11-22T12:42:00+08:00"
+author = "潘小铠"
+status = "pre_registered"
+predecessor = "v0.19 / v0.21 / v0.22（冻结，不改写）"
+
+[scope]
+# 背景：b 腿（行业相关点云）在 2014-04-04 从 SW2014 库（104 码）切到当前库（165 码），
+# 节点数 74 → 101；2021-12-13 再跳到 123—131。756 日滚动阈值窗口跨断点，
+# 导致 2014-04→2017-05、2022-01→2025-03 两段判定使用混合节点规模的分布。
+#
+# 本版只改 b 腿的代码体系与阈值口径，不动 a 腿、不动 S3、不动判定机结构。
+
+purpose = "b 腿统一到 2021 版代码体系并重算全历史，使阈值窗口内不再混用两套代码"
+
+[data]
+db = "tda_project/outputs/xy_replication_data.db"
+table = "sw2_daily"
+code_filter = "parent is not 'SW2014 legacy supplement' and last_date >= '2026-11-01'"
+n_codes_active = 124
+start = "1999-12-30"
+end = "2026-11-03"
+# 节点数随行业真实存在性变化：1999 约 66、2014 起约 93、2021-12 起约 124。
+# 恒定节点集在数据上不可得（申万新设二级行业无 1999 年历史，
+# 已实测 801039 非金属材料Ⅱ 在 2000-01-04 返回空）。
+# 因此本版不追求节点恒定，只追求「代码体系单一」。
+
+[nodes]
+mode = "varying"
+known_breaks = ["2014-02-21", "2021-12-13"]
+expected_n = { "1999": 66, "2014": 93, "2021": 124 }
+
+[returns]
+window = 10
+kind = "simple"          # b 腿原口径为简单收益，保持
+min_nodes = 20
+
+[threshold]
+window = 756
+min_obs = 120
+pct_high = 0.85
+pct_low = 0.15
+mode = "global"          # 全局口径，不用段内标定
+rationale = """
+段内标定实测会让事件 12 的票数从 6 归零（2022-01-25 段首距事件起点仅 13 个交易日，
+不足 min_obs），属冷启动空窗。为避免历史事件失效，本版保留全局口径，
+并把跳变后 756 个交易日标记为 degraded，单独披露而不剔除。
+"""
+
+[degraded]
+flag_windows = [["2014-02-21", "2017-05-22"], ["2021-12-13", "2025-03-25"]]
+treatment = "标记，不剔除；报告中单列 degraded 期判定"
+
+[grid]
+features = [7, 10]
+votes = [4, 5, 6]
+percentiles = [[0.85, 0.15], [0.80, 0.20], [0.90, 0.10]]
+# 全部组合都要报，不得只报最优组合。
+
+[metrics]
+primary = "45 事件四锚点识别数（提前 / 窗内 / 损伤窗 / 漏）"
+secondary = [
+  "判型正确数（深慢 / 浅快 / 无法判定）",
+  "9 个受影响事件逐一票数与达标日",
+  "v0.19 基线逐事件 p1/p3/p4 差值复现误差（容差 1e-6）",
+]
+reference = "v0.19 F7K4 / F10K6 全表"
+
+[stop_rules]
+- "若 45 事件中除事件 12 外有 ≥2 个事件由已识别变为未识别，则结论为「换库不可接受」，不调参追平"
+- "若基线复现误差 > 1e-6，停止，先查实现"
+- "若 85/15 分位下识别数低于 v0.19 基线，报告全网格结果，不得只挑通过的分位"
+
+[red_lines]
+- "不覆盖 v0.19—v0.22 任何产物"
+- "不改 config/study.toml"
+- "不改冻结标签、事件表、判定机结构（7 票 / 3 类型票 / 连续 2 日 / 20 日窗）"
+- "2026 不作为样本外，只作事后描述"
+- "全部结论为样本内描述性对账"
+
+[outputs]
+feature_file = "regime_v029_b_unified_w10.csv"
+vote_file = "regime_v029_votes_grid.csv"
+event_file = "regime_v029_event_matrix.csv"
+summary_file = "regime_v029_summary.csv"
+report = "regime_v029_unified_xy_report.html"

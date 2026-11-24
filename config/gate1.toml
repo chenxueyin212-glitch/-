@@ -1,0 +1,63 @@
+# Gate 1开发期OOF预登记。生成于2026-11-07，查看任何M0/M1结果前冻结。
+# 只允许2024-12-31前数据；2025年起最终测试集不参与本实验。
+
+[protocol]
+version = "gate1-development-oof-v1.0.1-2026-11-07-single-class-fallback"
+status = "frozen_before_results"
+main_panel = "p16"
+auxiliary_panels = ["p27", "p31"]
+test_start = "2025-01-01"
+development_rule = "feature date and label_end both before test_start; use gate0-v1.0 date splits"
+
+[features]
+window = 50
+scale = "raw_log_returns_no_window_rescaling"
+m0 = ["market_realized_volatility_50", "market_downside_semideviation_50", "industry_average_correlation_50", "industry_covariance_leading_eigenvalue_50", "industry_cross_sectional_dispersion_50"]
+m1_added = ["A_full_h0", "A_full_h1", "D_full_h0", "D_full_h1"]
+homology = [0, 1]
+single_parameter_region = "full_only_no_density_no_core_no_edge"
+A = "finite-bar total persistence p=1; infinite H0 bar excluded"
+D = "Wasserstein W1(PD_t,PD_t-1); first point cloud omitted"
+
+[model]
+predictor = "sklearn.linear_model.LogisticRegression"
+C = 1.0
+penalty = "l2"
+solver = "lbfgs"
+max_iter = 2000
+class_weight = "balanced"
+random_state = 20261107
+scaler = "StandardScaler fit separately on each training fold only"
+hyperparameter_search = "none"
+calibration = "none; use predict_proba; no test or pooled-OOF refit"
+single_class_policy = "specified after p27 fold-1 raised a single-class error and before any metrics were viewed: emit the sole class as a constant score for both M0/M1; never change initial_train_days or drop the fold"
+comparison = "M0 versus M1=M0+single_parameter_features with identical folds and predictor"
+
+[threshold]
+rule = "per-fold 0.95 quantile of that model's fitted training probabilities"
+quantile = 0.95
+alarm_when = "score strictly greater than threshold; a constant-score single-class fold therefore emits no alarms"
+alarm_event = "maximal consecutive run of alarm dates across the pooled OOF timeline; no gap merging"
+
+[event_evaluation]
+crisis_definition = "u is a crossing day if exists 1<=u-t<=20 with I_u/I_t-1<=-0.10"
+merge_gap_trading_days = 20
+event_onset = "first crossing day of each merged crossing cluster"
+lead_days = 20
+lag_days = 5
+matching = "chronological crises; nearest unused early alarm first, otherwise earliest unused late alarm; other alarms FP"
+boundary_rule = "exclude crisis onsets without a fully scored 20-day lead and 5-day lag window"
+metrics = ["TP", "Late", "FN", "FP", "precision", "recall", "false_alarms_per_year", "median_lead_days"]
+role = "secondary diagnostics, not development gate criterion"
+
+[statistics]
+primary_metric = "pooled development OOF PR-AUC implemented as sklearn average_precision_score"
+comparison_metric = "M1_PR_AUC_minus_M0_PR_AUC on identical scored dates"
+bootstrap = "paired moving-block bootstrap of OOF date rows"
+block_length = 20
+repetitions = 1000
+seed = 20261107
+confidence_level = 0.95
+development_gate_pass = "p16 delta PR-AUC > 0 and the 95% percentile bootstrap lower bound > 0"
+auxiliary_role = "p27 and p31 are reported for stability only and do not reverse the p16 development gate"
+no_final_test_rule = "regardless of development outcome, 2025+ final test remains sealed in this run"
